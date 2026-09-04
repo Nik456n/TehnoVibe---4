@@ -1,15 +1,16 @@
 import json
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
-# Наш сервер-ресторан
+# Инициализация приложения FastAPI
 app = FastAPI(title="Подписки-Сканер", version="1.0")
 
-# Путь к папке contracts латиницей, как просил тимлид
+# Формирование абсолютного пути к JSON-файлу с мок-данными
 MOCK_FILE = Path(__file__).parent / "contracts" / "mock_analyze_response.json"
 
 
+# Обработка POST-запроса для выдачи мок-данных
 @app.post("/analyze")
 async def analyze():
     try:
@@ -20,6 +21,20 @@ async def analyze():
         raise HTTPException(status_code=500, detail="Файл с ответом не найден!")
 
 
+# Обработка GET-запроса для имитации отмены подписки
 @app.get("/cancel/{subscription_id}")
 async def cancel_subscription(subscription_id: str):
     return {"status": "успех", "message": f"Отмена подписки {subscription_id}"}
+
+
+# Обработка POST-запроса для загрузки файла пользователем
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    # Асинхронное чтение содержимого файла в память
+    content = await file.read()
+    # Возврат метаданных загруженного файла в формате JSON
+    return {
+        "filename": file.filename,
+        "content_type": file.content_type,
+        "size_bytes": len(content),
+    }
