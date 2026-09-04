@@ -1,0 +1,114 @@
+{
+  "id": "case_02_student",
+  "persona": "Студентка 20 лет. Много развлекательных подписок, два видеосервиса и две музыки, есть годовая подписка и один сервис, которого нет в словаре.",
+  "tests": [
+    "два кластера пересечений: video и music",
+    "годовая подписка (Coursera) — редкий период",
+    "неизвестный сервис (Obsidian) — должен уйти в LLM и получить категорию",
+    "подписка началась в середине периода (Midjourney)",
+    "подписка закончилась в середине периода (Skillbox) — списания прекратились"
+  ],
+  "period_from": "2026-03-01",
+  "period_to": "2026-08-31",
+  "subscriptions": [
+    {
+      "name": "Netflix",
+      "raw_names": ["NETFLIX.COM AMSTERDAM NLD"],
+      "category": "video",
+      "amount": 999.0,
+      "period": "monthly",
+      "start": "2026-03-07",
+      "end": "2026-08-07",
+      "flag": "red",
+      "reason": "Дублирует Кинопоиск"
+    },
+    {
+      "name": "Кинопоиск",
+      "raw_names": ["YANDEX*KINOPOISK MOSCOW RUS"],
+      "category": "video",
+      "amount": 399.0,
+      "period": "monthly",
+      "start": "2026-03-12",
+      "end": "2026-08-12",
+      "flag": "red",
+      "reason": "Дублирует Netflix, но дешевле — его и оставляем"
+    },
+    {
+      "name": "Spotify",
+      "raw_names": ["SPOTIFY P2A1B3C4"],
+      "category": "music",
+      "amount": 399.0,
+      "period": "monthly",
+      "start": "2026-03-19",
+      "end": "2026-08-19",
+      "flag": "red",
+      "reason": "Дублирует VK Музыку"
+    },
+    {
+      "name": "VK Музыка",
+      "raw_names": ["VK MUSIC SUBSCRIPTION"],
+      "category": "music",
+      "amount": 199.0,
+      "period": "monthly",
+      "start": "2026-03-04",
+      "end": "2026-08-04",
+      "flag": "red",
+      "reason": "Дублирует Spotify"
+    },
+    {
+      "name": "Coursera",
+      "raw_names": ["COURSERA.ORG MOUNTAIN VIEW"],
+      "category": "education",
+      "amount": 3990.0,
+      "period": "yearly",
+      "start": "2026-04-02",
+      "end": "2026-04-02",
+      "flag": "yellow",
+      "reason": "Годовая подписка, следующее списание в апреле"
+    },
+    {
+      "name": "Skillbox",
+      "raw_names": ["SKILLBOX MOSCOW RUS"],
+      "category": "education",
+      "amount": 3000.0,
+      "period": "monthly",
+      "start": "2026-03-15",
+      "end": "2026-05-15",
+      "flag": "yellow",
+      "reason": "Списания прекратились в мае — курс закончен"
+    },
+    {
+      "name": "Midjourney",
+      "raw_names": ["MIDJOURNEY INC"],
+      "category": "ai_tools",
+      "amount": 1000.0,
+      "period": "monthly",
+      "start": "2026-06-21",
+      "end": "2026-08-21",
+      "flag": "yellow",
+      "reason": "Подключена недавно, оценить пользу позже"
+    },
+    {
+      "name": "Obsidian Sync",
+      "raw_names": ["PADDLE.NET*OBSIDIAN"],
+      "category": "cloud",
+      "amount": 850.0,
+      "period": "monthly",
+      "start": "2026-03-24",
+      "end": "2026-08-24",
+      "flag": "green",
+      "reason": "Единственное облако, синхронизация заметок"
+    },
+    {
+      "name": "МТС",
+      "raw_names": ["MTS MOBILE PAY"],
+      "category": "telecom",
+      "amount": 650.0,
+      "period": "monthly",
+      "start": "2026-03-01",
+      "end": "2026-08-01",
+      "flag": "green",
+      "reason": "Мобильная связь, отключать нечего"
+    }
+  ]
+}
