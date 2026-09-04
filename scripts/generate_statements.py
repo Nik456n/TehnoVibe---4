@@ -199,7 +199,7 @@ def main() -> None:
     } for s in subs]
     gt = OUT_DIR / "ground_truth.json"
     gt.write_text(json.dumps(truth, ensure_ascii=False, indent=2),
-                  encoding="utf-8")
+                  encoding="utf-8", newline="\n")
     print(f"{gt.relative_to(ROOT)}: {len(truth)} подписок — эталон для метрик")
 
 
