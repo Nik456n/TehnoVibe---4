@@ -1,0 +1,255 @@
+pattern,canonical_name,category,typical_amount,period
+YANDEX*KINOPOISK,Кинопоиск,video,399,monthly
+YANDEX KINOPOISK,Кинопоиск,video,399,monthly
+KINOPOISK,Кинопоиск,video,399,monthly
+KINOPOISK HD,Кинопоиск,video,399,monthly
+YANDEX*KP,Кинопоиск,video,399,monthly
+KP HD,Кинопоиск,video,399,monthly
+KINOPOISK PLUS,Кинопоиск,video,399,monthly
+YANDEX PLUS KINOPOISK,Кинопоиск,video,399,monthly
+KINOPOISK.RU,Кинопоиск,video,399,monthly
+YANDEX*KINOPOISK PLUS,Кинопоиск,video,399,monthly
+OKKO,Okko,video,799,monthly
+OKKO TV,Okko,video,799,monthly
+OKKO.RU,Okko,video,799,monthly
+OKKO*SUBSCRIPTION,Okko,video,799,monthly
+OKKO*PREMIUM,Okko,video,799,monthly
+OKKO ONLINE,Okko,video,799,monthly
+OKKO.TV,Okko,video,799,monthly
+OKKO FILMS,Okko,video,799,monthly
+OKKO*MONTHLY,Okko,video,799,monthly
+OKKO*SUB,Okko,video,799,monthly
+IVI.RU,Иви,video,599,monthly
+IVI,Иви,video,599,monthly
+IVI TV,Иви,video,599,monthly
+IVI*SUBSCRIPTION,Иви,video,599,monthly
+IVI*PREMIUM,Иви,video,599,monthly
+IVI ONLINE,Иви,video,599,monthly
+IVI.RU*SUB,Иви,video,599,monthly
+IVI FILM,Иви,video,599,monthly
+IVI*MONTHLY,Иви,video,599,monthly
+IVI*ONLINE,Иви,video,599,monthly
+WINK,Wink,video,399,monthly
+WINK.RU,Wink,video,399,monthly
+ROSTELECOM WINK,Wink,video,399,monthly
+WINK*SUBSCRIPTION,Wink,video,399,monthly
+WINK TV,Wink,video,399,monthly
+WINK ONLINE,Wink,video,399,monthly
+WINK*PREMIUM,Wink,video,399,monthly
+WINK.RU*MONTHLY,Wink,video,399,monthly
+WINK*TV,Wink,video,399,monthly
+WINK*SUB,Wink,video,399,monthly
+VK MUSIC,VK Музыка,music,199,monthly
+VK*MUZYKA,VK Музыка,music,199,monthly
+VK MUSIC SUB,VK Музыка,music,199,monthly
+VK MUS,VK Музыка,music,199,monthly
+VK.COM MUSIC,VK Музыка,music,199,monthly
+VK*SUBSCRIPTION,VK Музыка,music,199,monthly
+VK MUSIC MONTHLY,VK Музыка,music,199,monthly
+VK MUSIC PREMIUM,VK Музыка,music,199,monthly
+VK*MUZ,VK Музыка,music,199,monthly
+VK MUSIC RU,VK Музыка,music,199,monthly
+YANDEX*MUSIC,Яндекс Музыка,music,299,monthly
+YANDEX MUSIC,Яндекс Музыка,music,299,monthly
+YANDEX.MUSIC,Яндекс Музыка,music,299,monthly
+YMUSIC,Яндекс Музыка,music,299,monthly
+YANDEX MUSIC SUB,Яндекс Музыка,music,299,monthly
+YANDEX*MUSIC PLUS,Яндекс Музыка,music,299,monthly
+YANDEX PLUS MUSIC,Яндекс Музыка,music,299,monthly
+MUSIC.YANDEX.RU,Яндекс Музыка,music,299,monthly
+YANDEX MUSIC PREMIUM,Яндекс Музыка,music,299,monthly
+YANDEX*MUSIC MONTHLY,Яндекс Музыка,music,299,monthly
+SBER ZVUK,Звуки,music,199,monthly
+ZVUK,Звуки,music,199,monthly
+ZVUK.COM,Звуки,music,199,monthly
+SBER*ZVUK,Звуки,music,199,monthly
+ZVUK MUSIC,Звуки,music,199,monthly
+ZVUK*SUB,Звуки,music,199,monthly
+ZVUK PREMIUM,Звуки,music,199,monthly
+ZVUK.COM*SUB,Звуки,music,199,monthly
+ZVUK MONTHLY,Звуки,music,199,monthly
+SBER ZVUK PREMIUM,Звуки,music,199,monthly
+CLOUD MAIL.RU,Cloud Mail.ru,cloud,149,monthly
+MAIL.RU CLOUD,Cloud Mail.ru,cloud,149,monthly
+VK CLOUD MAIL,Cloud Mail.ru,cloud,149,monthly
+CLOUD MAIL,Cloud Mail.ru,cloud,149,monthly
+MAIL CLOUD,Cloud Mail.ru,cloud,149,monthly
+VK*MAIL CLOUD,Cloud Mail.ru,cloud,149,monthly
+CLOUD.MAIL.RU,Cloud Mail.ru,cloud,149,monthly
+MAILRU CLOUD,Cloud Mail.ru,cloud,149,monthly
+VK CLOUD,Cloud Mail.ru,cloud,149,monthly
+MAIL.RU*CLOUD,Cloud Mail.ru,cloud,149,monthly
+YANDEX 360,Яндекс 360,cloud,249,monthly
+YANDEX*360,Яндекс 360,cloud,249,monthly
+YANDEX DISK,Яндекс 360,cloud,249,monthly
+YANDEX DISK PLUS,Яндекс 360,cloud,249,monthly
+YANDEX DISK*SUB,Яндекс 360,cloud,249,monthly
+YANDEX 360 PREMIUM,Яндекс 360,cloud,249,monthly
+YANDEX360,Яндекс 360,cloud,249,monthly
+DISK.YANDEX.RU,Яндекс 360,cloud,249,monthly
+YANDEX CLOUD DISK,Яндекс 360,cloud,249,monthly
+YANDEX*DISK,Яндекс 360,cloud,249,monthly
+GOOGLE*GOOGLE ONE,Google One,cloud,199,monthly
+GOOGLE ONE,Google One,cloud,199,monthly
+GOOGLE STORAGE,Google One,cloud,199,monthly
+GOOGLE*STORAGE,Google One,cloud,199,monthly
+GOOGLE ONE SUB,Google One,cloud,199,monthly
+GOOGLE*ONE,Google One,cloud,199,monthly
+GOOGLE STORAGE PLAN,Google One,cloud,199,monthly
+GOOGLE ONE PREMIUM,Google One,cloud,199,monthly
+GOOGLE ONE MONTHLY,Google One,cloud,199,monthly
+GOOGLE*DRIVE STORAGE,Google One,cloud,199,monthly
+YANDEX PLUS,Яндекс Плюс,music,299,monthly
+YANDEX*PLUS,Яндекс Плюс,music,299,monthly
+YANDEX PLUS SUB,Яндекс Плюс,music,299,monthly
+YANDEX*PLUS SUBSCRIPTION,Яндекс Плюс,music,299,monthly
+PLUS.YANDEX.RU,Яндекс Плюс,music,299,monthly
+YANDEX PLUS MONTHLY,Яндекс Плюс,music,299,monthly
+YANDEX*YPLUS,Яндекс Плюс,music,299,monthly
+YANDEX PLUS PREMIUM,Яндекс Плюс,music,299,monthly
+YANDEX PLUS PAY,Яндекс Плюс,music,299,monthly
+YANDEX*PLUS MONTH,Яндекс Плюс,music,299,monthly
+SBERPRIME,СберПрайм,bank_premium,399,monthly
+SBER PRIME,СберПрайм,bank_premium,399,monthly
+SBER*PRIME,СберПрайм,bank_premium,399,monthly
+SBERBANK PRIME,СберПрайм,bank_premium,399,monthly
+SBER PRIME SUB,СберПрайм,bank_premium,399,monthly
+SBER*PREMIUM,СберПрайм,bank_premium,399,monthly
+SBERPRIME MONTHLY,СберПрайм,bank_premium,399,monthly
+SBER PRIME PLUS,СберПрайм,bank_premium,399,monthly
+SBER*PRIME MONTH,СберПрайм,bank_premium,399,monthly
+SBERPRIME SUB,СберПрайм,bank_premium,399,monthly
+TINKOFF PRO,Тинькофф Pro,bank_premium,199,monthly
+T-BANK PRO,Тинькофф Pro,bank_premium,199,monthly
+TBANK PRO,Тинькофф Pro,bank_premium,199,monthly
+TINKOFF*PRO,Тинькофф Pro,bank_premium,199,monthly
+T-BANK*PRO,Тинькофф Pro,bank_premium,199,monthly
+TBANK*PRO,Тинькофф Pro,bank_premium,199,monthly
+TINKOFF PREMIUM,Тинькофф Pro,bank_premium,199,monthly
+T-BANK PREMIUM,Тинькофф Pro,bank_premium,199,monthly
+TBANK PRO SUB,Тинькофф Pro,bank_premium,199,monthly
+TINKOFF PRO MONTHLY,Тинькофф Pro,bank_premium,199,monthly
+MTS,МТС,telecom,650,monthly
+MTS.RU,МТС,telecom,650,monthly
+MTS MOBILE,МТС,telecom,650,monthly
+MTS*BALANCE,МТС,telecom,650,monthly
+MTS*PAY,МТС,telecom,650,monthly
+MTS TELECOM,МТС,telecom,650,monthly
+MTS*MONTHLY,МТС,telecom,650,monthly
+MTS MOBILE PAY,МТС,telecom,650,monthly
+MTS.RU*PAY,МТС,telecom,650,monthly
+MTS SUBSCRIPTION,МТС,telecom,650,monthly
+BEELINE,билайн,telecom,650,monthly
+BEELINE.RU,билайн,telecom,650,monthly
+BEE LINE,билайн,telecom,650,monthly
+BEELINE MOBILE,билайн,telecom,650,monthly
+BEELINE*PAY,билайн,telecom,650,monthly
+BEELINE TELECOM,билайн,telecom,650,monthly
+BEELINE*MONTHLY,билайн,telecom,650,monthly
+BEELINE MOBILE PAY,билайн,telecom,650,monthly
+BEELINE.RU*PAY,билайн,telecom,650,monthly
+BEELINE SUB,билайн,telecom,650,monthly
+MEGAFON,МегаФон,telecom,650,monthly
+MEGAFON.RU,МегаФон,telecom,650,monthly
+MEGAFON MOBILE,МегаФон,telecom,650,monthly
+MEGAFON*PAY,МегаФон,telecom,650,monthly
+MEGAFON TELECOM,МегаФон,telecom,650,monthly
+MEGAFON*MONTHLY,МегаФон,telecom,650,monthly
+MEGAFON MOBILE PAY,МегаФон,telecom,650,monthly
+MEGAFON.RU*PAY,МегаФон,telecom,650,monthly
+MEGAFON SUB,МегаФон,telecom,650,monthly
+MEGAFON BALANCE,МегаФон,telecom,650,monthly
+TELE2,Теле2,telecom,550,monthly
+T2.RU,Теле2,telecom,550,monthly
+TELE2 MOBILE,Теле2,telecom,550,monthly
+T2 MOBILE,Теле2,telecom,550,monthly
+TELE2*PAY,Теле2,telecom,550,monthly
+T2*PAY,Теле2,telecom,550,monthly
+TELE2*MONTHLY,Теле2,telecom,550,monthly
+T2.RU*PAY,Теле2,telecom,550,monthly
+TELE2 BALANCE,Теле2,telecom,550,monthly
+APPLE.COM/BILL,Apple Services,other,499,monthly
+APPLE COM BILL,Apple Services,other,499,monthly
+APPLE SERVICES,Apple Services,other,499,monthly
+APPLE.COM BILL,Apple Services,other,499,monthly
+ITUNES.COM/BILL,Apple Services,other,499,monthly
+ITUNES BILL,Apple Services,other,499,monthly
+APPLE*SERVICES,Apple Services,other,499,monthly
+APPLE*SUBSCRIPTION,Apple Services,other,499,monthly
+APPLE.COM*BILL,Apple Services,other,499,monthly
+APPLE MEDIA SERVICES,Apple Services,other,499,monthly
+GOOGLE*PLAY,Google Play,other,399,monthly
+GOOGLE PLAY,Google Play,other,399,monthly
+GOOGLE PLAY APPS,Google Play,other,399,monthly
+GOOGLE*GPLAY,Google Play,other,399,monthly
+GOOGLE PLAY STORE,Google Play,other,399,monthly
+GOOGLE*SERVICES,Google Play,other,399,monthly
+GOOGLE PLAY SUB,Google Play,other,399,monthly
+GOOGLE PLAY PURCHASE,Google Play,other,399,monthly
+GOOGLE*PLAY STORE,Google Play,other,399,monthly
+GOOGLE PLAY BILL,Google Play,other,399,monthly
+DUOLINGO,Duolingo,education,999,monthly
+DUOLINGO.COM,Duolingo,education,999,monthly
+DUOLINGO PLUS,Duolingo,education,999,monthly
+DUOLINGO*SUB,Duolingo,education,999,monthly
+DUOLINGO SUPER,Duolingo,education,999,monthly
+DUOLINGO*PREMIUM,Duolingo,education,999,monthly
+DUOLINGO MONTHLY,Duolingo,education,999,monthly
+DUOLINGO.COM*SUB,Duolingo,education,999,monthly
+DUOLINGO SUPER SUB,Duolingo,education,999,monthly
+DUOLINGO*PLUS,Duolingo,education,999,monthly
+OPENAI*CHATGPT,ChatGPT,ai_tools,999,monthly
+CHATGPT,ChatGPT,ai_tools,999,monthly
+OPENAI CHATGPT,ChatGPT,ai_tools,999,monthly
+CHATGPT PLUS,ChatGPT,ai_tools,999,monthly
+OPENAI*PLUS,ChatGPT,ai_tools,999,monthly
+CHATGPT.COM,ChatGPT,ai_tools,999,monthly
+OPENAI.COM,ChatGPT,ai_tools,999,monthly
+CHATGPT SUB,ChatGPT,ai_tools,999,monthly
+OPENAI*CHATGPT PLUS,ChatGPT,ai_tools,999,monthly
+CHATGPT PLUS SUB,ChatGPT,ai_tools,999,monthly
+LITRES,Литрес,books,499,monthly
+LITRES.RU,Литрес,books,499,monthly
+LITRES*SUB,Литрес,books,499,monthly
+LITRES SUBSCRIPTION,Литрес,books,499,monthly
+LITRES BOOKS,Литрес,books,499,monthly
+LITRES.RU*PAY,Литрес,books,499,monthly
+LITRES*MONTHLY,Литрес,books,499,monthly
+LITRES PREMIUM,Литрес,books,499,monthly
+LITRES BOOK,Литрес,books,499,monthly
+LITRES*SUBS,Литрес,books,499,monthly
+NETFLIX,Netflix,video,999,monthly
+PREMIER,Premier,video,299,monthly
+START,Start,video,699,monthly
+MORE.TV,More.tv,video,299,monthly
+SPOTIFY,Spotify,music,399,monthly
+BOOKMATE,Букмейт,books,399,monthly
+MYBOOK,MyBook,books,499,monthly
+SKILLBOX,Skillbox,education,3000,monthly
+YANDEX PRACTICUM,Яндекс Практикум,education,2000,monthly
+COURSERA,Coursera,education,2000,monthly
+PS PLUS,PS Plus,games,799,monthly
+XBOX GAME PASS,Xbox Game Pass,games,999,monthly
+VK PLAY,VK Play,games,500,monthly
+WORLD CLASS,World Class,fitness,12000,monthly
+ALEX FITNESS,Alex Fitness,fitness,3000,monthly
+SPIRIT FITNESS,Spirit,fitness,4000,monthly
+FITSTARS,FitStars,fitness,1990,monthly
+MIDJOURNEY,Midjourney,ai_tools,1000,monthly
+GIGACHAT,GigaChat,ai_tools,499,monthly
+CLAUDE,Claude,ai_tools,2000,monthly
+T-PREMIUM,T-Premium,bank_premium,199,monthly
+ALFA ONLY,Alfa Only,bank_premium,299,monthly
+VTB MULTIBONUS,ВТБ Мультибонус,bank_premium,299,monthly
+OZON PREMIUM,Ozon Premium,bank_premium,299,monthly
+WILDBERRIES CLUB,Wildberries Клуб,bank_premium,199,monthly
+X5 CLUB,X5 Клуб,bank_premium,199,monthly
+BOOSTY,Boosty,other,500,monthly
+YANDEX LAVKA,Яндекс Лавка,other,1000,monthly
+STROKI,Строки,books,399,monthly
+MTS STROKI,Строки,books,399,monthly
+KION STROKI,Строки,books,399,monthly
+SAMOKAT PLUS,Самокат Плюс,delivery,299,monthly
+SAMOKAT*PLUS,Самокат Плюс,delivery,299,monthly
+MTS PREMIUM,МТС Premium,bank_premium,349,monthly
+WHOOSH PASS,Whoosh,transport,399,monthly
