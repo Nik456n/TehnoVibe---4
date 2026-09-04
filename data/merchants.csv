@@ -224,14 +224,12 @@ START,Start,video,699,monthly
 MORE.TV,More.tv,video,299,monthly
 SPOTIFY,Spotify,music,399,monthly
 BOOKMATE,Букмейт,books,399,monthly
-СТРОКИ,Строки,books,399,monthly
 MYBOOK,MyBook,books,499,monthly
 SKILLBOX,Skillbox,education,3000,monthly
 YANDEX PRACTICUM,Яндекс Практикум,education,2000,monthly
 COURSERA,Coursera,education,2000,monthly
 PS PLUS,PS Plus,games,799,monthly
 XBOX GAME PASS,Xbox Game Pass,games,999,monthly
-STEAM,Steam,games,1000,monthly
 VK PLAY,VK Play,games,500,monthly
 WORLD CLASS,World Class,fitness,12000,monthly
 ALEX FITNESS,Alex Fitness,fitness,3000,monthly
@@ -247,5 +245,11 @@ OZON PREMIUM,Ozon Premium,bank_premium,299,monthly
 WILDBERRIES CLUB,Wildberries Клуб,bank_premium,199,monthly
 X5 CLUB,X5 Клуб,bank_premium,199,monthly
 BOOSTY,Boosty,other,500,monthly
-SAMOKAT,Самокат,other,1000,monthly
 YANDEX LAVKA,Яндекс Лавка,other,1000,monthly
+STROKI,Строки,books,399,monthly
+MTS STROKI,Строки,books,399,monthly
+KION STROKI,Строки,books,399,monthly
+SAMOKAT PLUS,Самокат Плюс,delivery,299,monthly
+SAMOKAT*PLUS,Самокат Плюс,delivery,299,monthly
+MTS PREMIUM,МТС Premium,bank_premium,349,monthly
+WHOOSH PASS,Whoosh,transport,399,monthly
