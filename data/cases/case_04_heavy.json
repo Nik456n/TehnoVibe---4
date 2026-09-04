@@ -67,19 +67,6 @@
       "reason": "Четыре видеосервиса образуют кластер пересечений"
     },
     {
-      "name": "Google One",
-      "raw_names": [
-        "GOOGLE*GOOGLE ONE MOUNTAIN VIEW"
-      ],
-      "category": "cloud",
-      "amount": 199.0,
-      "period": "monthly",
-      "start": "2026-03-05",
-      "end": "2026-08-05",
-      "flag": "red",
-      "reason": "Один из трёх облачных сервисов"
-    },
-    {
       "name": "Яндекс 360",
       "raw_names": [
         "YANDEX 360 MOSCOW RUS"
@@ -110,12 +97,12 @@
       "raw_names": [
         "PADDLE.NET*OBSIDIAN"
       ],
-      "category": "other",
+      "category": "cloud",
       "amount": 850.0,
       "period": "monthly",
       "start": "2026-03-24",
       "end": "2026-08-24",
-      "flag": "yellow",
+      "flag": "red",
       "reason": "Неизвестный сервис отсутствует в словаре; категорию должен определить LLM"
     },
     {
@@ -143,6 +130,19 @@
       "end": "2026-08-21",
       "flag": "yellow",
       "reason": "Единственная музыкальная подписка, подключена в середине периода"
+    },
+    {
+      "name": "МТС",
+      "raw_names": [
+        "MTS RUSSIA"
+      ],
+      "category": "telecom",
+      "amount": 650.0,
+      "period": "monthly",
+      "start": "2026-03-03",
+      "end": "2026-08-03",
+      "flag": "green",
+      "reason": "Обычная телеком-подписка без пересечений с другими категориями"
     }
   ]
 }
