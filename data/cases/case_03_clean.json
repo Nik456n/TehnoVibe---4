@@ -1,0 +1,17 @@
+{
+  "id": "case_03_clean",
+  "persona": "Молодой специалист 27 лет. Подписки для разных задач, в каждой категории только один сервис.",
+  "tests": ["нет пересечений — алгоритм не должен придумывать red-кластеры"],
+  "period_from": "2026-03-01",
+  "period_to": "2026-08-31",
+  "subscriptions": [
+    {"name": "Netflix", "raw_names": ["NETFLIX.COM AMSTERDAM NLD"], "category": "video", "amount": 999.0, "period": "monthly", "start": "2026-03-07", "end": "2026-08-07", "flag": "yellow", "reason": "Единственный видеосервис"},
+    {"name": "Spotify", "raw_names": ["SPOTIFY P2A1B3C4"], "category": "music", "amount": 399.0, "period": "monthly", "start": "2026-03-19", "end": "2026-08-19", "flag": "yellow", "reason": "Единственный музыкальный сервис"},
+    {"name": "Obsidian Sync", "raw_names": ["PADDLE.NET*OBSIDIAN"], "category": "cloud", "amount": 850.0, "period": "monthly", "start": "2026-03-24", "end": "2026-08-24", "flag": "green", "reason": "Единственное облако"},
+    {"name": "World Class", "raw_names": ["WORLD CLASS FITNESS MOSCOW"], "category": "fitness", "amount": 4990.0, "period": "monthly", "start": "2026-05-18", "end": "2026-08-18", "flag": "yellow", "reason": "Подключена в середине периода"},
+    {"name": "Coursera", "raw_names": ["COURSERA.ORG MOUNTAIN VIEW"], "category": "education", "amount": 3990.0, "period": "yearly", "start": "2026-04-02", "end": "2026-04-02", "flag": "yellow", "reason": "Годовая подписка"},
+    {"name": "Литрес", "raw_names": ["LITRES.RU MOSCOW RUS"], "category": "books", "amount": 399.0, "period": "monthly", "start": "2026-03-10", "end": "2026-08-10", "flag": "yellow", "reason": "Единственная подписка в книгах"},
+    {"name": "PS Plus", "raw_names": ["PLAYSTATION NETWORK PS PLUS"], "category": "games", "amount": 799.0, "period": "monthly", "start": "2026-03-22", "end": "2026-08-22", "flag": "yellow", "reason": "Единственная игровая подписка"},
+    {"name": "МТС", "raw_names": ["MTS MOBILE PAY"], "category": "telecom", "amount": 650.0, "period": "monthly", "start": "2026-03-01", "end": "2026-08-01", "flag": "green", "reason": "Мобильная связь"}
+  ]
+}

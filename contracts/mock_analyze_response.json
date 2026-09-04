@@ -125,7 +125,7 @@
     },
     {
       "id": "sub_008",
-      "name": "iCloud+",
+      "name": "Apple Services",
       "raw_names": ["APPLE.COM/BILL ITUNES.COM"],
       "category": "cloud",
       "amount": 149.0,
@@ -142,7 +142,7 @@
     },
     {
       "id": "sub_009",
-      "name": "Фитнес-клуб",
+      "name": "World Class",
       "raw_names": ["WORLD CLASS EKB"],
       "category": "fitness",
       "amount": 3200.0,
@@ -159,7 +159,7 @@
     },
     {
       "id": "sub_010",
-      "name": "ChatGPT Plus",
+      "name": "ChatGPT",
       "raw_names": ["OPENAI *CHATGPT SUBSCR"],
       "category": "ai_tools",
       "amount": 2100.0,
@@ -176,7 +176,7 @@
     },
     {
       "id": "sub_011",
-      "name": "Duolingo Super",
+      "name": "Duolingo",
       "raw_names": ["DUOLINGO INC"],
       "category": "education",
       "amount": 890.0,

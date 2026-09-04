@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Netflix",
+    "amount": 999.0,
+    "period": "monthly",
+    "category": "video",
+    "flag": "yellow"
+  },
+  {
+    "name": "Spotify",
+    "amount": 399.0,
+    "period": "monthly",
+    "category": "music",
+    "flag": "yellow"
+  },
+  {
+    "name": "Obsidian Sync",
+    "amount": 850.0,
+    "period": "monthly",
+    "category": "cloud",
+    "flag": "green"
+  },
+  {
+    "name": "World Class",
+    "amount": 4990.0,
+    "period": "monthly",
+    "category": "fitness",
+    "flag": "yellow"
+  },
+  {
+    "name": "Coursera",
+    "amount": 3990.0,
+    "period": "yearly",
+    "category": "education",
+    "flag": "yellow"
+  },
+  {
+    "name": "Литрес",
+    "amount": 399.0,
+    "period": "monthly",
+    "category": "books",
+    "flag": "yellow"
+  },
+  {
+    "name": "PS Plus",
+    "amount": 799.0,
+    "period": "monthly",
+    "category": "games",
+    "flag": "yellow"
+  },
+  {
+    "name": "МТС",
+    "amount": 650.0,
+    "period": "monthly",
+    "category": "telecom",
+    "flag": "green"
+  }
+]

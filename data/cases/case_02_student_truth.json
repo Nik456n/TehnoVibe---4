@@ -1,0 +1,65 @@
+[
+  {
+    "name": "Netflix",
+    "amount": 999.0,
+    "period": "monthly",
+    "category": "video",
+    "flag": "red"
+  },
+  {
+    "name": "Кинопоиск",
+    "amount": 399.0,
+    "period": "monthly",
+    "category": "video",
+    "flag": "red"
+  },
+  {
+    "name": "Spotify",
+    "amount": 399.0,
+    "period": "monthly",
+    "category": "music",
+    "flag": "red"
+  },
+  {
+    "name": "VK Музыка",
+    "amount": 199.0,
+    "period": "monthly",
+    "category": "music",
+    "flag": "red"
+  },
+  {
+    "name": "Coursera",
+    "amount": 3990.0,
+    "period": "yearly",
+    "category": "education",
+    "flag": "yellow"
+  },
+  {
+    "name": "Skillbox",
+    "amount": 3000.0,
+    "period": "monthly",
+    "category": "education",
+    "flag": "yellow"
+  },
+  {
+    "name": "Midjourney",
+    "amount": 1000.0,
+    "period": "monthly",
+    "category": "ai_tools",
+    "flag": "yellow"
+  },
+  {
+    "name": "Obsidian Sync",
+    "amount": 850.0,
+    "period": "monthly",
+    "category": "cloud",
+    "flag": "green"
+  },
+  {
+    "name": "МТС",
+    "amount": 650.0,
+    "period": "monthly",
+    "category": "telecom",
+    "flag": "green"
+  }
+]

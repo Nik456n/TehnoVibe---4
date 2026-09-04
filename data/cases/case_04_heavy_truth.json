@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Netflix",
+    "amount": 999.0,
+    "period": "monthly",
+    "category": "video",
+    "flag": "red"
+  },
+  {
+    "name": "Кинопоиск",
+    "amount": 399.0,
+    "period": "monthly",
+    "category": "video",
+    "flag": "red"
+  },
+  {
+    "name": "Premier",
+    "amount": 399.0,
+    "period": "monthly",
+    "category": "video",
+    "flag": "red"
+  },
+  {
+    "name": "Okko",
+    "amount": 799.0,
+    "period": "monthly",
+    "category": "video",
+    "flag": "red"
+  },
+  {
+    "name": "Google One",
+    "amount": 199.0,
+    "period": "monthly",
+    "category": "cloud",
+    "flag": "red"
+  },
+  {
+    "name": "Яндекс 360",
+    "amount": 399.0,
+    "period": "monthly",
+    "category": "cloud",
+    "flag": "red"
+  },
+  {
+    "name": "Cloud Mail.ru",
+    "amount": 149.0,
+    "period": "monthly",
+    "category": "cloud",
+    "flag": "red"
+  },
+  {
+    "name": "Obsidian Sync",
+    "amount": 850.0,
+    "period": "monthly",
+    "category": "cloud",
+    "flag": "red"
+  },
+  {
+    "name": "World Class",
+    "amount": 29990.0,
+    "period": "yearly",
+    "category": "fitness",
+    "flag": "yellow"
+  },
+  {
+    "name": "Spotify",
+    "amount": 399.0,
+    "period": "monthly",
+    "category": "music",
+    "flag": "yellow"
+  }
+]

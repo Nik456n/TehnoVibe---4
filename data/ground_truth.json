@@ -49,28 +49,28 @@
     "flag": "yellow"
   },
   {
-    "name": "iCloud+",
+    "name": "Apple Services",
     "amount": 149.0,
     "period": "monthly",
     "category": "cloud",
     "flag": "green"
   },
   {
-    "name": "Фитнес-клуб",
+    "name": "World Class",
     "amount": 3200.0,
     "period": "monthly",
     "category": "fitness",
     "flag": "yellow"
   },
   {
-    "name": "ChatGPT Plus",
+    "name": "ChatGPT",
     "amount": 2100.0,
     "period": "monthly",
     "category": "ai_tools",
     "flag": "yellow"
   },
   {
-    "name": "Duolingo Super",
+    "name": "Duolingo",
     "amount": 890.0,
     "period": "yearly",
     "category": "education",
