@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Кинопоиск",
+    "amount": 399.0,
+    "period": "monthly",
+    "category": "video",
+    "flag": "red"
+  },
+  {
+    "name": "Okko",
+    "amount": 499.0,
+    "period": "monthly",
+    "category": "video",
+    "flag": "red"
+  },
+  {
+    "name": "Wink",
+    "amount": 299.0,
+    "period": "monthly",
+    "category": "video",
+    "flag": "red"
+  },
+  {
+    "name": "VK Музыка",
+    "amount": 199.0,
+    "period": "monthly",
+    "category": "music",
+    "flag": "red"
+  },
+  {
+    "name": "Яндекс Плюс",
+    "amount": 449.0,
+    "period": "monthly",
+    "category": "music",
+    "flag": "yellow"
+  },
+  {
+    "name": "СберПрайм",
+    "amount": 299.0,
+    "period": "monthly",
+    "category": "bank_premium",
+    "flag": "green"
+  },
+  {
+    "name": "Литрес",
+    "amount": 399.0,
+    "period": "monthly",
+    "category": "books",
+    "flag": "yellow"
+  },
+  {
+    "name": "iCloud+",
+    "amount": 149.0,
+    "period": "monthly",
+    "category": "cloud",
+    "flag": "green"
+  },
+  {
+    "name": "Фитнес-клуб",
+    "amount": 3200.0,
+    "period": "monthly",
+    "category": "fitness",
+    "flag": "yellow"
+  },
+  {
+    "name": "ChatGPT Plus",
+    "amount": 2100.0,
+    "period": "monthly",
+    "category": "ai_tools",
+    "flag": "yellow"
+  },
+  {
+    "name": "Duolingo Super",
+    "amount": 890.0,
+    "period": "yearly",
+    "category": "education",
+    "flag": "yellow"
+  }
+]
