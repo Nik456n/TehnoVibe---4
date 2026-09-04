@@ -1,0 +1,148 @@
+{
+  "id": "case_04_heavy",
+  "persona": "Активный пользователь 32 лет. Одновременно держит несколько видеосервисов и облаков, часть подписок периодически меняется, а некоторые оплачиваются редко или с пропусками.",
+  "tests": [
+    "четыре сервиса в категории video — должен получиться red-кластер",
+    "три сервиса в категории cloud — должен получиться red-кластер",
+    "у Яндекс 360 цена менялась в середине периода — алгоритм должен учитывать изменение стоимости, а не считать это новой подпиской",
+    "у Mail Cloud был пропущен один месяц списания — алгоритм должен не принять единичный пропуск за окончательное отключение",
+    "Кинопоиск и Premier имеют одинаковую сумму, но это разные сервисы и оба входят в video-кластер",
+    "неизвестный сервис (Obsidian Sync) — должен уйти в LLM и получить категорию cloud",
+    "годовая подписка (World Class) — редкий период, одно списание",
+    "подписка началась в середине периода (Spotify)"
+  ],
+  "period_from": "2026-03-01",
+  "period_to": "2026-08-31",
+  "subscriptions": [
+    {
+      "name": "Netflix",
+      "raw_names": [
+        "NETFLIX.COM AMSTERDAM NLD"
+      ],
+      "category": "video",
+      "amount": 999.0,
+      "period": "monthly",
+      "start": "2026-03-07",
+      "end": "2026-08-07",
+      "flag": "red",
+      "reason": "Четыре видеосервиса конкурируют в одной категории"
+    },
+    {
+      "name": "Кинопоиск",
+      "raw_names": [
+        "YANDEX*KINOPOISK MOSCOW RUS"
+      ],
+      "category": "video",
+      "amount": 399.0,
+      "period": "monthly",
+      "start": "2026-03-12",
+      "end": "2026-08-12",
+      "flag": "red",
+      "reason": "Дублирует другие видеосервисы; сумма 399 совпадает с Premier"
+    },
+    {
+      "name": "Premier",
+      "raw_names": [
+        "PREMIER.ONE MOSCOW RUS"
+      ],
+      "category": "video",
+      "amount": 399.0,
+      "period": "monthly",
+      "start": "2026-03-16",
+      "end": "2026-08-16",
+      "flag": "red",
+      "reason": "Дублирует другие видеосервисы; сумма такая же, как у Кинопоиска, но сервис другой"
+    },
+    {
+      "name": "Okko",
+      "raw_names": [
+        "OKKO TV MOSCOW RUS"
+      ],
+      "category": "video",
+      "amount": 799.0,
+      "period": "monthly",
+      "start": "2026-03-21",
+      "end": "2026-08-21",
+      "flag": "red",
+      "reason": "Четыре видеосервиса образуют кластер пересечений"
+    },
+    {
+      "name": "Яндекс 360",
+      "raw_names": [
+        "YANDEX 360 MOSCOW RUS"
+      ],
+      "category": "cloud",
+      "amount": 299.0,
+      "period": "monthly",
+      "start": "2026-03-09",
+      "end": "2026-08-09",
+      "flag": "red",
+      "reason": "Один из трёх облачных сервисов; стоимость подписки менялась в середине периода"
+    },
+    {
+      "name": "Mail Cloud",
+      "raw_names": [
+        "MAIL.RU CLOUD MOSCOW RUS"
+      ],
+      "category": "cloud",
+      "amount": 149.0,
+      "period": "monthly",
+      "start": "2026-03-14",
+      "end": "2026-08-14",
+      "flag": "red",
+      "reason": "Один из трёх облачных сервисов; в периоде был пропущен один месяц списания"
+    },
+    {
+      "name": "Obsidian Sync",
+      "raw_names": [
+        "PADDLE.NET*OBSIDIAN"
+      ],
+      "category": "cloud",
+      "amount": 850.0,
+      "period": "monthly",
+      "start": "2026-03-24",
+      "end": "2026-08-24",
+      "flag": "red",
+      "reason": "Неизвестный сервис отсутствует в словаре; категорию должен определить LLM"
+    },
+    {
+      "name": "World Class",
+      "raw_names": [
+        "WORLD CLASS FITNESS MOSCOW"
+      ],
+      "category": "fitness",
+      "amount": 29990.0,
+      "period": "yearly",
+      "start": "2026-04-02",
+      "end": "2026-04-02",
+      "flag": "yellow",
+      "reason": "Годовая подписка, одно списание за год"
+    },
+    {
+      "name": "Spotify",
+      "raw_names": [
+        "SPOTIFY P2A1B3C4"
+      ],
+      "category": "music",
+      "amount": 399.0,
+      "period": "monthly",
+      "start": "2026-06-21",
+      "end": "2026-08-21",
+      "flag": "yellow",
+      "reason": "Единственная музыкальная подписка, подключена в середине периода"
+    },
+    {
+      "name": "МТС",
+      "raw_names": [
+        "MTS RUSSIA"
+      ],
+      "category": "telecom",
+      "amount": 650.0,
+      "period": "monthly",
+      "start": "2026-03-03",
+      "end": "2026-08-03",
+      "flag": "green",
+      "reason": "Обычная телеком-подписка без пересечений с другими категориями"
+    }
+  ]
+}
