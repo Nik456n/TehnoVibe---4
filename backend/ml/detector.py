@@ -235,6 +235,8 @@ def detect(transactions: list[dict],
         groups[key]["txs"].append(tx)
 
     # 2. Периодичность внутри каждой группы
+    all_dates = [t["date"] for t in transactions]
+    window_days = ((max(all_dates) - min(all_dates)).days if all_dates else 0)
     subscriptions: list[dict] = []
     counter = 0
     for name, data in groups.items():
@@ -258,9 +260,16 @@ def detect(transactions: list[dict],
                     continue
 
             if period == "unknown" and data["from_dict"]:
-                period = data["info"].get("period", "unknown")
-                if period == "unknown":
-                    period = "monthly"
+                # Одно списание — периодичность из дат не выводится.
+                # Но если выписка покрывает больше двух месяцев, а платёж
+                # был один, ежемесячной подписка быть не может: их было бы
+                # шесть. Значит это годовая, и умножать сумму на 12 нельзя.
+                if len(cluster) == 1 and window_days > 70:
+                    period = "yearly"
+                else:
+                    period = data["info"].get("period", "unknown")
+                    if period == "unknown":
+                        period = "monthly"
 
             if from_dict and len(cluster) >= 2 and jitter > MAX_JITTER_DAYS * 2:
                 continue

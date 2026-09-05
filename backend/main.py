@@ -20,6 +20,10 @@ from contracts.schemas import AnalyzeResponse, CancelInstruction
 from backend.ml.detector import detect
 from backend.ml.parser import parse_statement
 
+# ИСПРАВЛЕНО: слой LLM поверх детектора. Если ключа нет или модель
+# недоступна — результат отдаётся как есть, с llm_used: false
+from backend.ml import llm
+
 # ИСПРАВЛЕНО: импорт gigachat перенесён вниз, внутрь эндпоинта.
 # Если пакет не установлен у фронтендера — весь бэкенд не поднимался.
 
@@ -90,7 +94,7 @@ def run_pipeline(content: bytes, filename: str) -> dict:
             detail="В файле не найдено ни одной операции. "
                    "Проверьте, что это выписка, а не другой файл.",
         )
-    return detect(transactions)
+    return llm.enrich(detect(transactions))
 
 
 # ИСПРАВЛЕНО: добавлена проверка живости, удобно фронту и на демо
@@ -124,6 +128,15 @@ async def analyze(file: UploadFile = File(...)):
 # Ничего не грузит, отдаёт готовый результат — наш план Б на защите.
 @app.post("/analyze/demo", response_model=AnalyzeResponse)
 async def analyze_demo():
+    # ИСПРАВЛЕНО: демо считается тем же пайплайном, что и настоящий
+    # анализ — иначе цифры в демо и в реальном разборе расходятся.
+    # Мок остаётся запасным вариантом, если демо-файла нет на диске.
+    demo = ROOT / "data" / "demo_statement_clean.csv"
+    if demo.exists():
+        try:
+            return llm.enrich(detect(parse_statement(demo.read_bytes())))
+        except Exception:
+            pass
     return MOCK
 
 
@@ -131,36 +144,58 @@ async def analyze_demo():
 # внутрь /analyze. Восстановлен и подключён к базе отмены.
 @app.get("/cancel/{subscription_id}", response_model=CancelInstruction)
 async def cancel(subscription_id: str):
+    """Инструкция по отмене.
+
+    Принимает и идентификатор подписки (sub_003), и название сервиса
+    (Кинопоиск). Второе важно: при разборе реальной выписки id
+    генерируются заново и не совпадают с моковыми, а название
+    остаётся тем же — по нему и привязывается инструкция.
+    """
     sub = next(
         (s for s in MOCK["subscriptions"] if s["id"] == subscription_id), None
     )
-    if sub is None:
-        raise HTTPException(
-            status_code=404, detail=f"Подписка {subscription_id} не найдена"
-        )
+    service_name = sub["name"] if sub else subscription_id
+    savings = sub["yearly_cost"] if sub else 0.0
 
     kb = {}
     if CANCEL_KB.exists():
         kb = json.loads(CANCEL_KB.read_text(encoding="utf-8"))
-    entry = kb.get(sub["name"])
+    entry = kb.get(service_name)
 
     if entry:
         return {
             "subscription_id": subscription_id,
-            "service_name": sub["name"],
+            "service_name": service_name,
             "difficulty": entry.get("difficulty", "medium"),
             "steps": entry.get("steps", []),
             "url": entry.get("url"),
             "letter_template": entry.get("letter_template"),
             "source": "knowledge_base",
-            "savings_yearly": sub["yearly_cost"],
+            "savings_yearly": savings,
         }
 
-    # Сервиса нет в базе — не выдумываем шаги, отдаём общие
-    # и честно помечаем источник
+    # Сервиса нет в базе — просим модель. Если её нет, отдаём общие шаги
+    # и честно помечаем источник, чтобы в интерфейсе было видно:
+    # эти шаги человеком не проверены.
+    provider = llm.get_provider()
+    if provider is not None:
+        generated = llm.cancel_instruction(service_name, provider, llm.Cache())
+        if generated:
+            return {
+                "subscription_id": subscription_id,
+                "service_name": service_name,
+                "difficulty": generated["difficulty"],
+                "steps": generated["steps"],
+                "url": generated["url"],
+                "letter_template": llm.write_letter(
+                    service_name, provider, llm.Cache()),
+                "source": "llm_generated",
+                "savings_yearly": savings,
+            }
+
     return {
         "subscription_id": subscription_id,
-        "service_name": sub["name"],
+        "service_name": service_name,
         "difficulty": "medium",
         "steps": [
             "Открыть личный кабинет сервиса",
@@ -170,7 +205,7 @@ async def cancel(subscription_id: str):
         "url": None,
         "letter_template": None,
         "source": "llm_generated",
-        "savings_yearly": sub["yearly_cost"],
+        "savings_yearly": savings,
     }
 
 
