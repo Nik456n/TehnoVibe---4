@@ -158,5 +158,209 @@
       "reason": "Бесплатный образовательный сервис с хорошей репутацией",
       "savings_yearly": 0.0
     }
-  ]
+  ],
+  "cat:PADDLE.NET*OBSIDIAN": {
+    "name": "Obsidian",
+    "category": "cloud"
+  },
+  "expl:education:Coursera,Skillbox": "Оставляем Skillbox, так как экономия составляет 3990 рублей в год по сравнению с Coursera",
+  "expl:video:Netflix,Кинопоиск": "Оставляем Кинопоиск вместо Netflix, экономия составляет $119.88 в месяц или $1198.80 в год.",
+  "expl:music:Spotify,VK Музыка": "Оставляем подписку VK Музыка, так как она дешевле Spotify; годовая экономия составит 4788.0 руб.",
+  "plan:[{\"amount\": 3000.0, \"category\": \"education\", \"first_seen\": \"2026-03-16\", \"id\": \"sub_005\", \"name\": \"Skillbox\", \"occurrences\": 3, \"period\": \"monthly\", \"yearly_cost\": 36000.0}, {\"amount\": 1000.0, \"category\": \"ai_tools\", \"first_seen\": \"2026-06-22\", \"id\": \"sub_009\", \"name\": \"Midjourney\", \"occurrences\": 3, \"period\": \"monthly\", \"yearly_cost\": 12000.0}, {\"amount\": 999.0, \"category\": \"video\", \"first_seen\": \"2026-03-08\", \"id\": \"sub_003\", \"name\": \"Netflix\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 11988.0}, {\"amount\": 850.0, \"category\": \"cloud\", \"first_seen\": \"2026-03-24\", \"id\": \"sub_007\", \"name\": \"Obsidian\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 10200.0}, {\"amount\": 650.0, \"category\": \"telecom\", \"first_seen\": \"2026-02-28\", \"id\": \"sub_001\", \"name\": \"МТС\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 7800.0}, {\"amount\": 399.0, \"category\": \"video\", \"first_seen\": \"2026-03-11\", \"id\": \"sub_004\", \"name\": \"Кинопоиск\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 4788.0}, {\"amount\": 399.0, \"category\": \"music\", \"first_seen\": \"2026-03-20\", \"id\": \"sub_006\", \"name\": \"Spotify\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 4788.0}, {\"amount\": 3990.0, \"category\": \"education\", \"first_seen\": \"2026-04-02\", \"id\": \"sub_008\", \"name\": \"Coursera\", \"occurrences\": 1, \"period\": \"yearly\", \"yearly_cost\": 3990.0}, {\"amount\": 199.0, \"category\": \"music\", \"first_seen\": \"2026-03-03\", \"id\": \"sub_002\", \"name\": \"VK Музыка\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 2388.0}]": [
+    {
+      "subscription_id": "sub_008",
+      "action": "downgrade",
+      "priority": 1,
+      "reason": "Годовая подписка Coursera слишком дорогая, стоит рассмотреть месячную версию или бесплатный доступ.",
+      "savings_yearly": 3591.0
+    },
+    {
+      "subscription_id": "sub_005",
+      "action": "cancel",
+      "priority": 2,
+      "reason": "Подписка Skillbox имеет высокую стоимость и не приносит значительной пользы; возможно, стоит отказаться от нее.",
+      "savings_yearly": 36000.0
+    },
+    {
+      "subscription_id": "sub_004",
+      "action": "review",
+      "priority": 3,
+      "reason": "Стоимость Кинопоиска высока относительно других сервисов видео. Стоит сравнить цены и качество контента.",
+      "savings_yearly": null
+    },
+    {
+      "subscription_id": "sub_006",
+      "action": "keep",
+      "priority": 4,
+      "reason": "Спотифай является основным музыкальным сервисом и пока устраивает по цене и качеству.",
+      "savings_yearly": null
+    },
+    {
+      "subscription_id": "sub_002",
+      "action": "keep",
+      "priority": 5,
+      "reason": "VK Музыка удовлетворяет потребности в музыке и не требует замены или сокращения расходов.",
+      "savings_yearly": null
+    },
+    {
+      "subscription_id": "sub_001",
+      "action": "keep",
+      "priority": 6,
+      "reason": "Подписка МТС покрывает базовые потребности в связи и не требует изменений.",
+      "savings_yearly": null
+    },
+    {
+      "subscription_id": "sub_007",
+      "action": "keep",
+      "priority": 7,
+      "reason": "Обсидиановая подписка соответствует потребностям и не нуждается в сокращении или изменении.",
+      "savings_yearly": null
+    },
+    {
+      "subscription_id": "sub_009",
+      "action": "keep",
+      "priority": 8,
+      "reason": "Midjourney подходит под текущие нужды и не требует пересмотра.",
+      "savings_yearly": null
+    },
+    {
+      "subscription_id": "sub_003",
+      "action": "keep",
+      "priority": 9,
+      "reason": "Netflix обеспечивает качественный контент и не требует изменений.",
+      "savings_yearly": null
+    }
+  ],
+  "plan:[{\"amount\": 4990.0, \"category\": \"fitness\", \"first_seen\": \"2026-05-17\", \"id\": \"sub_008\", \"name\": \"World Class\", \"occurrences\": 4, \"period\": \"monthly\", \"yearly_cost\": 59880.0}, {\"amount\": 999.0, \"category\": \"video\", \"first_seen\": \"2026-03-08\", \"id\": \"sub_002\", \"name\": \"Netflix\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 11988.0}, {\"amount\": 850.0, \"category\": \"cloud\", \"first_seen\": \"2026-03-25\", \"id\": \"sub_006\", \"name\": \"Obsidian\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 10200.0}, {\"amount\": 799.0, \"category\": \"games\", \"first_seen\": \"2026-03-23\", \"id\": \"sub_005\", \"name\": \"PS Plus\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 9588.0}, {\"amount\": 650.0, \"category\": \"telecom\", \"first_seen\": \"2026-03-01\", \"id\": \"sub_001\", \"name\": \"МТС\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 7800.0}, {\"amount\": 399.0, \"category\": \"books\", \"first_seen\": \"2026-03-11\", \"id\": \"sub_003\", \"name\": \"Литрес\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 4788.0}, {\"amount\": 399.0, \"category\": \"music\", \"first_seen\": \"2026-03-18\", \"id\": \"sub_004\", \"name\": \"Spotify\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 4788.0}, {\"amount\": 3990.0, \"category\": \"education\", \"first_seen\": \"2026-04-02\", \"id\": \"sub_007\", \"name\": \"Coursera\", \"occurrences\": 1, \"period\": \"yearly\", \"yearly_cost\": 3990.0}]": [
+    {
+      "subscription_id": "sub_008",
+      "action": "cancel",
+      "priority": 1,
+      "reason": "Высокая годовая стоимость и отсутствие явной ценности",
+      "savings_yearly": 59880.0
+    },
+    {
+      "subscription_id": "sub_002",
+      "action": "downgrade",
+      "priority": 2,
+      "reason": "Возможность снизить затраты без потери качества сервиса",
+      "savings_yearly": 11988.0
+    },
+    {
+      "subscription_id": "sub_006",
+      "action": "keep",
+      "priority": 3,
+      "reason": "Необходимость облачного хранилища",
+      "savings_yearly": 0.0
+    },
+    {
+      "subscription_id": "sub_005",
+      "action": "review",
+      "priority": 4,
+      "reason": "Регулярная проверка актуальности подписки",
+      "savings_yearly": 0.0
+    },
+    {
+      "subscription_id": "sub_001",
+      "action": "keep",
+      "priority": 5,
+      "reason": "Необходимость мобильной связи",
+      "savings_yearly": 0.0
+    },
+    {
+      "subscription_id": "sub_003",
+      "action": "keep",
+      "priority": 6,
+      "reason": "Удобство доступа к книгам",
+      "savings_yearly": 0.0
+    },
+    {
+      "subscription_id": "sub_004",
+      "action": "keep",
+      "priority": 7,
+      "reason": "Подписка на музыку",
+      "savings_yearly": 0.0
+    },
+    {
+      "subscription_id": "sub_007",
+      "action": "keep",
+      "priority": 8,
+      "reason": "Образовательная подписка",
+      "savings_yearly": 0.0
+    }
+  ],
+  "expl:cloud:Cloud Mail.ru,Google One,Яндекс 360": "Оставляем Google One, так как экономия составляет 6576 рублей в год по сравнению с отменой Яндекс 360 и Cloud Mail.ru",
+  "plan:[{\"amount\": 29990.0, \"category\": \"fitness\", \"first_seen\": \"2026-04-02\", \"id\": \"sub_009\", \"name\": \"World Class\", \"occurrences\": 1, \"period\": \"yearly\", \"yearly_cost\": 29990.0}, {\"amount\": 999.0, \"category\": \"video\", \"first_seen\": \"2026-03-08\", \"id\": \"sub_002\", \"name\": \"Netflix\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 11988.0}, {\"amount\": 850.0, \"category\": \"cloud\", \"first_seen\": \"2026-03-23\", \"id\": \"sub_008\", \"name\": \"Obsidian\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 10200.0}, {\"amount\": 799.0, \"category\": \"video\", \"first_seen\": \"2026-03-20\", \"id\": \"sub_007\", \"name\": \"Okko\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 9588.0}, {\"amount\": 399.0, \"category\": \"cloud\", \"first_seen\": \"2026-03-09\", \"id\": \"sub_003\", \"name\": \"Яндекс 360\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 4788.0}, {\"amount\": 399.0, \"category\": \"video\", \"first_seen\": \"2026-03-11\", \"id\": \"sub_004\", \"name\": \"Кинопоиск\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 4788.0}, {\"amount\": 399.0, \"category\": \"video\", \"first_seen\": \"2026-03-17\", \"id\": \"sub_006\", \"name\": \"Premier\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 4788.0}, {\"amount\": 399.0, \"category\": \"music\", \"first_seen\": \"2026-06-21\", \"id\": \"sub_010\", \"name\": \"Spotify\", \"occurrences\": 3, \"period\": \"monthly\", \"yearly_cost\": 4788.0}, {\"amount\": 199.0, \"category\": \"cloud\", \"first_seen\": \"2026-03-06\", \"id\": \"sub_001\", \"name\": \"Google One\", \"occurrences\": 6, \"period\": \"monthly\", \"yearly_cost\": 2388.0}, {\"amount\": 149.0, \"category\": \"cloud\", \"first_seen\": \"2026-03-13\", \"id\": \"sub_005\", \"name\": \"Cloud Mail.ru\", \"occurrences\": 5, \"period\": \"monthly\", \"yearly_cost\": 1788.0}]": [
+    {
+      "subscription_id": "sub_009",
+      "action": "cancel",
+      "priority": 1,
+      "reason": "Высокая стоимость фитнес-подписки при отсутствии явных преимуществ перед конкурентами.",
+      "savings_yearly": 29990.0
+    },
+    {
+      "subscription_id": "sub_002",
+      "action": "downgrade",
+      "priority": 2,
+      "reason": "Возможность сократить расходы на видео-сервисы путем перехода на менее дорогой тариф.",
+      "savings_yearly": 7200.0
+    },
+    {
+      "subscription_id": "sub_008",
+      "action": "keep",
+      "priority": 3,
+      "reason": "Подходящий уровень цены и качества сервиса.",
+      "savings_yearly": 0.0
+    },
+    {
+      "subscription_id": "sub_007",
+      "action": "review",
+      "priority": 4,
+      "reason": "Наличие аналогов с аналогичными условиями, стоит рассмотреть альтернативы.",
+      "savings_yearly": 0.0
+    },
+    {
+      "subscription_id": "sub_003",
+      "action": "keep",
+      "priority": 5,
+      "reason": "Хорошее соотношение цена/качество облачного хранилища.",
+      "savings_yearly": 0.0
+    },
+    {
+      "subscription_id": "sub_004",
+      "action": "downgrade",
+      "priority": 6,
+      "reason": "Возможность снизить затраты на просмотр фильмов через переход на менее дорогой тариф.",
+      "savings_yearly": 5200.0
+    },
+    {
+      "subscription_id": "sub_006",
+      "action": "downgrade",
+      "priority": 7,
+      "reason": "Возможность уменьшить ежемесячные траты на видеосервисы.",
+      "savings_yearly": 5200.0
+    },
+    {
+      "subscription_id": "sub_010",
+      "action": "downgrade",
+      "priority": 8,
+      "reason": "Пересмотреть целесообразность подписки на Spotify с учетом наличия бесплатных аналогов.",
+      "savings_yearly": 4788.0
+    },
+    {
+      "subscription_id": "sub_001",
+      "action": "keep",
+      "priority": 9,
+      "reason": "Оптимальная цена среди аналогичных сервисов.",
+      "savings_yearly": 0.0
+    },
+    {
+      "subscription_id": "sub_005",
+      "action": "keep",
+      "priority": 10,
+      "reason": "Достаточный объем предоставляемого пространства при приемлемой цене.",
+      "savings_yearly": 0.0
+    }
+  ],
+  "expl:video:Netflix,Okko,Premier,Кинопоиск": "Оставляем Кинопоиск, так как он выбран пользователем для сохранения. Отмена Netflix, Okko и Premier позволит сэкономить 26364 рубля в год."
 }
