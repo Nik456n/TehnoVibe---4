@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -19,7 +18,6 @@
             --dark-green: #107F27;
             --near-black: #1A1A1A;
             --bg-card: #F3F4F6;
-
             --flag-red: #E64646;
             --flag-yellow: #FF8C00;
             --flag-green: #2FA84F;
@@ -32,6 +30,15 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         .dot-red {
             background-color: var(--flag-red);
         }
@@ -42,6 +49,10 @@
 
         .dot-green {
             background-color: var(--flag-green);
+        }
+
+        .dot-gray {
+            background-color: #9CA3AF;
         }
 
         .bg-primary-custom {
@@ -70,30 +81,28 @@
 
     <!-- ================= ЭКРАН 1: ГЛАВНАЯ ================= -->
     <div id="screen-main" class="block">
-        <!-- Шапка -->
         <div class="bg-primary-custom text-white rounded-xl p-5 mb-6 shadow-sm" onclick="triggerHaptic()">
-            <div class="text-[11px] font-bold uppercase tracking-wider mb-2 opacity-90">
-                Расход на подписки
-            </div>
-
-            <div class="flex items-center gap-3 mb-4">
-                <div class="text-[28px] font-extrabold leading-none" id="monthly-total-value">
-                    0 ₽<span class="text-[16px] font-medium text-white/90">/мес</span>
+            <div class="text-[11px] font-bold uppercase tracking-wider mb-2 opacity-90">Расход на подписки</div>
+            <div class="flex flex-col items-start gap-2 mb-2">
+                <div class="flex items-center gap-3">
+                    <div class="text-[28px] font-extrabold leading-none" id="monthly-total-value">
+                        0 ₽<span class="text-[16px] font-medium text-white/90">/мес</span>
+                    </div>
+                    <div class="bg-white/20 text-[11px] font-medium px-2 py-1 rounded-md" id="yearly-savings">
+                        Экономия 0 ₽/год
+                    </div>
                 </div>
-                <div class="bg-white/20 text-[11px] font-medium px-2 py-1 rounded-md" id="yearly-savings">
-                    Экономия 0 ₽/год
+                <div id="freed-money-container"
+                    class="hidden bg-[#D1FAE5] text-[#065F46] text-[12px] font-bold px-3 py-1.5 rounded-lg mt-1">
+                    Вы освободили <span id="freed-money-value">0</span> ₽/год
                 </div>
             </div>
         </div>
 
-        <!-- Список подписок (ФИЛЬТРЫ УДАЛЕНЫ) -->
-        <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3 px-1" id="subs-header">
-            Активные подписки (0)
-        </div>
-
+        <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3 px-1" id="subs-header">Активные
+            подписки (0)</div>
         <div id="subscriptions-list" class="space-y-3 mb-6"></div>
 
-        <!-- Блок пересечений (КЛИКАБЕЛЬНЫЙ) -->
         <div id="overlaps-container" class="hidden">
             <div onclick="showOverlapsScreen()"
                 class="border border-warning rounded-2xl p-4 flex items-center justify-between bg-white shadow-sm active:bg-gray-50 transition-colors cursor-pointer">
@@ -109,60 +118,52 @@
                     </div>
                 </div>
                 <div class="text-gray-400">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18L15 12L9 6" />
                     </svg>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ================= ЭКРАН 2: ПЕРЕСЕЧЕНИЯ ================= -->
+    <!-- ================= ЭКРАН 2: ПЕРЕСЕЧЕНИЯ С ВКЛАДКАМИ ================= -->
     <div id="screen-overlaps" class="hidden">
-        <!-- Шапка пересечений -->
+        <!-- Панель вкладок (Видеосервисы, Музыка и т.д.) -->
+        <div class="flex gap-2 overflow-x-auto no-scrollbar mb-5" id="overlap-tabs"></div>
+
+        <!-- Контент выбранной вкладки -->
+        <div id="overlap-tab-content"></div>
+    </div>
+
+    <!-- ================= ЭКРАН 3: ИНСТРУКЦИЯ ОТМЕНЫ ================= -->
+    <div id="screen-cancel" class="hidden">
         <div class="bg-primary-custom text-white rounded-xl p-5 mb-6 shadow-sm">
-            <div class="text-[11px] font-bold uppercase tracking-wider mb-2 opacity-90">
-                Переплата за дубли
-            </div>
-            <div class="text-[28px] font-extrabold leading-none mb-2" id="overlap-total-savings">
-                0 ₽/год
-            </div>
-            <div class="bg-white/20 text-[12px] font-medium px-3 py-1.5 rounded-lg inline-block"
-                id="overlap-explanation-badge">
-                Три видеосервиса закрывают одну потребность
+            <div class="text-[11px] font-bold uppercase tracking-wider mb-2 opacity-90">Управление подпиской</div>
+            <div class="text-[24px] font-extrabold leading-none" id="cancel-sub-name">Название</div>
+        </div>
+
+        <div class="bg-card-custom p-5 rounded-2xl mb-8">
+            <h3 class="font-bold text-[16px] text-main-custom mb-4">Как отменить подписку:</h3>
+            <ol class="list-decimal pl-4 space-y-3 text-[14px] text-gray-700 font-medium">
+                <li>Перейдите в настройки вашего аккаунта в сервисе.</li>
+                <li>Откройте раздел «Подписки» или «Платежи».</li>
+                <li>Нажмите на кнопку управления подпиской и выберите «Отменить».</li>
+            </ol>
+            <div class="mt-5 bg-[#FFF8EB] border border-[#FDE68A] p-3 rounded-xl flex gap-2 items-start">
+                <span class="text-warning font-bold text-[14px]">!</span>
+                <p class="text-[12px] text-[#92400E]">Подписка будет активна до конца оплаченного периода. Деньги не
+                    возвращаются.</p>
             </div>
         </div>
 
-        <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3 px-1">
-            Дублирующие сервисы
-        </div>
-
-        <div id="overlap-services-list" class="space-y-3 mb-6"></div>
-
-        <!-- Рекомендация -->
-        <div class="bg-[#F0FDF4] border border-[#86EFAC] p-4 rounded-xl mb-6 flex gap-3 items-start">
-            <div class="text-[#16A34A] mt-0.5">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 16v-4" />
-                    <path d="M12 8h.01" />
-                </svg>
-            </div>
-            <div>
-                <h4 class="font-bold text-[14px] text-gray-900 mb-1">Рекомендация</h4>
-                <p class="text-[12px] text-gray-600 leading-relaxed" id="overlap-recommendation-text"></p>
-            </div>
-        </div>
-
-        <button onclick="triggerHaptic()"
-            class="w-full bg-primary-custom text-white font-bold text-[16px] py-4 rounded-xl mb-4 active:bg-dark-green transition-colors">
-            Оптимизировать
+        <button onclick="markAsCanceled()"
+            class="w-full bg-[#1A1A1A] text-white font-bold text-[16px] py-4 rounded-xl mb-4 active:bg-gray-800 transition-colors">
+            Отменить
         </button>
-
-        <button onclick="goBack()"
+        <button onclick="goBackToMain()"
             class="w-full text-gray-500 font-medium text-[14px] py-2 active:text-gray-800 transition-colors">
-            Оставить всё как есть
+            Назад
         </button>
     </div>
 
@@ -172,34 +173,46 @@
             window.Telegram.WebApp.expand();
         }
 
-        // ================= НАСТРОЙКИ СЕТИ =================
         const BACKEND_URL = new URLSearchParams(location.search).get('api') || location.origin;
         let globalData = null;
+        let canceledSubs = new Set();
+        let currentCancelTarget = null;
+        let currentOverlapTabId = null; // ID активной вкладки пересечений
 
-        // План Б: 11 подписок из mock_analyze_response.json
+        const categoryDict = {
+            'video': 'Видеосервисы',
+            'music': 'Музыка',
+            'cloud': 'Облако',
+            'bank_premium': 'Банки',
+            'books': 'Книги',
+            'fitness': 'Спорт',
+            'ai_tools': 'Нейросети',
+            'education': 'Обучение'
+        };
+
         const mockData = {
-            "summary": { "monthly_total": 8066.17, "potential_savings_yearly": 10776 },
+            "request_id": "demo_001",
+            "period_from": "2026-03-01",
+            "period_to": "2026-08-31",
+            "transactions_parsed": 412,
             "subscriptions": [
-                { "name": "Кинопоиск", "amount": 399, "period": "monthly", "flag": "red", "reason": "Один из трёх видеосервисов на счёте" },
-                { "name": "Okko", "amount": 499, "period": "monthly", "flag": "red", "reason": "Дублирует Кинопоиск и Wink" },
-                { "name": "Яндекс Плюс", "amount": 449, "period": "monthly", "flag": "yellow", "reason": "Включает музыку и доставку — выгоднее оставить" },
-                { "name": "СберПрайм", "amount": 299, "period": "monthly", "flag": "green", "reason": "Даёт кэшбэк и бесплатную доставку, окупается" },
-                { "name": "ChatGPT", "amount": 1990, "period": "monthly", "flag": "yellow", "reason": "Используется для работы, высокая стоимость" },
-                { "name": "Apple Services", "amount": 599, "period": "monthly", "flag": "green", "reason": "Семейный тариф iCloud" },
-                { "name": "World Class", "amount": 3500, "period": "monthly", "flag": "yellow", "reason": "Крупный регулярный платеж" },
-                { "name": "Duolingo", "amount": 331, "period": "monthly", "flag": "green", "reason": "Активное ежедневное обучение" },
-                { "name": "Wink", "amount": 299, "period": "monthly", "flag": "red", "reason": "Дублирует Кинопоиск и Okko" },
-                { "name": "Литрес", "amount": 399, "period": "monthly", "flag": "green", "reason": "Регулярное чтение книг" },
-                { "name": "МТС Premium", "amount": 249, "period": "monthly", "flag": "yellow", "reason": "Дублирует экосистему Яндекса и Сбера" }
+                { "id": "sub_001", "name": "Кинопоиск", "category": "video", "amount": 399.0, "period": "monthly", "flag": "red", "reason": "Один из трёх видеосервисов на счёте" },
+                { "id": "sub_002", "name": "Okko", "category": "video", "amount": 499.0, "period": "monthly", "flag": "red", "reason": "Дублирует Кинопоиск и Wink" },
+                { "id": "sub_003", "name": "Wink", "category": "video", "amount": 299.0, "period": "monthly", "flag": "red", "reason": "Не использовался последние 2 месяца" },
+                { "id": "sub_004", "name": "VK Музыка", "category": "music", "amount": 199.0, "period": "monthly", "flag": "red", "reason": "Музыка уже входит в Яндекс Плюс" },
+                { "id": "sub_005", "name": "Яндекс Плюс", "category": "music", "amount": 449.0, "period": "monthly", "flag": "yellow", "reason": "Включает музыку и доставку — выгоднее оставить его" },
+                { "id": "sub_006", "name": "СберПрайм", "category": "bank_premium", "amount": 299.0, "period": "monthly", "flag": "green", "reason": "Даёт кэшбэк и бесплатную доставку, окупается" },
+                { "id": "sub_007", "name": "Литрес", "category": "books", "amount": 399.0, "period": "monthly", "flag": "yellow", "reason": "Единственная подписка в своей категории" },
+                { "id": "sub_008", "name": "Apple Services", "category": "cloud", "amount": 149.0, "period": "monthly", "flag": "green", "reason": "Хранит резервные копии телефона" },
+                { "id": "sub_009", "name": "World Class", "category": "fitness", "amount": 3200.0, "period": "monthly", "flag": "yellow", "reason": "Самая дорогая подписка — проверьте частоту посещений" },
+                { "id": "sub_010", "name": "ChatGPT", "category": "ai_tools", "amount": 2100.0, "period": "monthly", "flag": "yellow", "reason": "Подключена недавно, оценить пользу через месяц" },
+                { "id": "sub_011", "name": "Duolingo", "category": "education", "amount": 890.0, "period": "yearly", "flag": "yellow", "reason": "Годовая подписка, следующее списание в марте" }
             ],
             "overlaps": [
-                {
-                    "explanation": "У вас три видеосервиса: Кинопоиск, Okko и Wink.",
-                    "savings_yearly": 10776,
-                    "recommendation": "Отключение двух дублей сократит расходы без потери контента.",
-                    "services": ["Кинопоиск", "Okko", "Wink"]
-                }
-            ]
+                { "id": "video_streaming", "category": "video", "subscription_ids": ["sub_001", "sub_002", "sub_003"], "keep_suggestion": "sub_001", "savings_yearly": 9576.0, "explanation": "Три видеосервиса закрывают одну потребность. Кинопоиск дешевле Okko и активнее Wink — остальные два можно отключить." },
+                { "id": "music_streaming", "category": "music", "subscription_ids": ["sub_004", "sub_005"], "keep_suggestion": "sub_005", "savings_yearly": 2388.0, "explanation": "Яндекс Плюс уже включает музыку, отдельная подписка VK Музыка избыточна." }
+            ],
+            "summary": { "subscriptions_count": 11, "monthly_total": 8066.17, "yearly_total": 96794.0, "potential_savings_yearly": 11964.0 }
         };
 
         function triggerHaptic() {
@@ -208,42 +221,255 @@
             }
         }
 
+        function formatMoney(num) {
+            return Number(Math.round(num)).toLocaleString('ru-RU');
+        }
+
         function getAvatarColor(name) {
             if (name.includes('Кино')) return 'bg-[#FFD940] text-gray-900';
             if (name.includes('Okko')) return 'bg-[#5021A0] text-white';
             if (name.includes('Яндекс')) return 'bg-[#E64646] text-white';
             if (name.includes('Сбер')) return 'bg-[#2FA84F] text-white';
             if (name.includes('Wink')) return 'bg-[#0099FF] text-white';
+            if (name.includes('VK')) return 'bg-[#0077FF] text-white';
             return 'bg-blue-500 text-white';
         }
 
-        function formatMoney(num) {
-            return Number(Math.round(num)).toLocaleString('ru-RU');
+        function getActiveOverlaps() {
+            if (!globalData || !globalData.overlaps) return [];
+            return globalData.overlaps.filter(overlap => {
+                const badDupes = overlap.subscription_ids.filter(id => id !== overlap.keep_suggestion && !canceledSubs.has(id));
+                return badDupes.length > 0;
+            });
         }
 
+        function calculateGroupSavings(overlap) {
+            const badDupes = overlap.subscription_ids.filter(id => id !== overlap.keep_suggestion && !canceledSubs.has(id));
+            let savings = 0;
+            badDupes.forEach(id => {
+                const sub = globalData.subscriptions.find(s => s.id === id);
+                if (sub) savings += sub.period === 'yearly' ? sub.amount : sub.amount * 12;
+            });
+            return savings;
+        }
+
+        // ================= НАВИГАЦИЯ SPA =================
         function showOverlapsScreen() {
             triggerHaptic();
-            document.getElementById('screen-main').classList.add('hidden');
-            document.getElementById('screen-overlaps').classList.remove('hidden');
-
-            if (window.Telegram && window.Telegram.WebApp.BackButton) {
-                window.Telegram.WebApp.BackButton.show();
-                window.Telegram.WebApp.BackButton.onClick(goBack);
+            const activeOverlaps = getActiveOverlaps();
+            if (activeOverlaps.length > 0) {
+                currentOverlapTabId = activeOverlaps[0].id;
+                renderOverlapsTabs();
+                document.getElementById('screen-main').classList.add('hidden');
+                document.getElementById('screen-overlaps').classList.remove('hidden');
+                setupBackButton(goBackToMain);
             }
         }
 
-        function goBack() {
+        function showCancelScreen(subId) {
+            triggerHaptic();
+            currentCancelTarget = subId;
+            const sub = globalData.subscriptions.find(s => s.id === subId);
+            document.getElementById('cancel-sub-name').innerText = sub.name;
+            document.getElementById('screen-main').classList.add('hidden');
+            document.getElementById('screen-overlaps').classList.add('hidden');
+            document.getElementById('screen-cancel').classList.remove('hidden');
+            setupBackButton(goBackToMain);
+        }
+
+        function goBackToMain() {
             triggerHaptic();
             document.getElementById('screen-overlaps').classList.add('hidden');
+            document.getElementById('screen-cancel').classList.add('hidden');
             document.getElementById('screen-main').classList.remove('hidden');
-
             if (window.Telegram && window.Telegram.WebApp.BackButton) {
                 window.Telegram.WebApp.BackButton.hide();
-                window.Telegram.WebApp.BackButton.offClick(goBack);
             }
         }
 
-        // ================= РЕНДЕР =================
+        function setupBackButton(callback) {
+            if (window.Telegram && window.Telegram.WebApp.BackButton) {
+                window.Telegram.WebApp.BackButton.show();
+                window.Telegram.WebApp.BackButton.onClick(callback);
+            }
+        }
+
+        // ================= ВКЛАДКИ (TABS) И ОПТИМИЗАЦИЯ =================
+        function switchOverlapTab(tabId) {
+            triggerHaptic();
+            currentOverlapTabId = tabId;
+            renderOverlapsTabs();
+        }
+
+        function renderOverlapsTabs() {
+            const activeOverlaps = getActiveOverlaps();
+            if (activeOverlaps.length === 0) {
+                goBackToMain();
+                return;
+            }
+
+            if (!activeOverlaps.find(o => o.id === currentOverlapTabId)) {
+                currentOverlapTabId = activeOverlaps[0].id;
+            }
+
+            const tabsContainer = document.getElementById('overlap-tabs');
+            tabsContainer.innerHTML = '';
+
+            activeOverlaps.forEach(overlap => {
+                const catName = categoryDict[overlap.category] || 'Группа';
+                const isActive = overlap.id === currentOverlapTabId;
+
+                // Стили для активной и неактивной кнопки
+                const btnClass = isActive
+                    ? "bg-primary-custom text-white px-4 py-2 rounded-full text-[14px] font-bold whitespace-nowrap transition-colors"
+                    : "bg-card-custom text-main-custom px-4 py-2 rounded-full text-[14px] font-bold whitespace-nowrap transition-colors";
+
+                tabsContainer.innerHTML += `
+                    <button onclick="switchOverlapTab('${overlap.id}')" class="${btnClass}">
+                        ${catName}
+                    </button>
+                `;
+            });
+
+            renderOverlapTabContent(currentOverlapTabId);
+        }
+
+        function renderOverlapTabContent(overlapId) {
+            const overlap = getActiveOverlaps().find(o => o.id === overlapId);
+            if (!overlap) return;
+
+            const catName = categoryDict[overlap.category] || 'Категория';
+            const currentSavings = calculateGroupSavings(overlap);
+            const container = document.getElementById('overlap-tab-content');
+
+            let cardsHtml = '';
+            const activeSubsInGroup = overlap.subscription_ids.filter(id => !canceledSubs.has(id));
+
+            activeSubsInGroup.forEach(id => {
+                const sub = globalData.subscriptions.find(s => s.id === id);
+                if (!sub) return;
+
+                // Проверяем, является ли эта подписка той, которую нейросеть рекомендует оставить (самая выгодная)
+                const isKeep = id === overlap.keep_suggestion;
+                const initial = sub.name.charAt(0).toUpperCase();
+                const avatarStyles = getAvatarColor(sub.name);
+                const periodSuffix = sub.period === 'yearly' ? '₽/год' : '₽/мес';
+
+                const dotColor = isKeep ? 'dot-green' : 'dot-red';
+                const borderClass = isKeep ? 'border-2 border-[#21A038]' : 'border border-transparent';
+                const badgeHtml = isKeep ? '<span class="bg-[#E6F4EA] text-[#21A038] text-[10px] px-2 py-0.5 rounded font-bold uppercase ml-2 tracking-wider">Выгоднее</span>' : '';
+
+                cardsHtml += `
+                    <div class="bg-card-custom p-4 rounded-[16px] mb-3 ${borderClass}">
+                        <div class="flex justify-between items-center mb-2.5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full ${avatarStyles} flex items-center justify-center font-bold text-[16px]">${initial}</div>
+                                <h3 class="font-bold text-[16px] text-main-custom flex items-center">${sub.name} ${badgeHtml}</h3>
+                            </div>
+                            <span class="text-[16px] font-bold text-main-custom">${formatMoney(sub.amount)} ${periodSuffix}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-[6px] h-[6px] rounded-full flex-shrink-0 ${dotColor}"></span>
+                            <span class="text-[11px] text-gray-500 font-medium leading-tight">${sub.reason}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="bg-primary-custom text-white rounded-xl p-5 mb-5 shadow-sm">
+                    <div class="text-[11px] font-bold uppercase tracking-wider mb-2 opacity-90">Переплата за дубли • ${catName}</div>
+                    <div class="text-[28px] font-extrabold leading-none">${formatMoney(currentSavings)} ₽/год</div>
+                </div>
+                
+                <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3 px-1">Дублирующие сервисы</div>
+                <div>${cardsHtml}</div>
+                
+                <div class="bg-[#F0FDF4] border border-[#86EFAC] p-4 rounded-xl mb-6 flex gap-3 items-start mt-2">
+                    <div class="text-[#16A34A] mt-0.5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>
+                    <div>
+                        <h4 class="font-bold text-[14px] text-gray-900 mb-1">Рекомендация</h4>
+                        <p class="text-[12px] text-gray-600 leading-relaxed">${overlap.explanation}</p>
+                    </div>
+                </div>
+                
+                <button onclick="optimizeGroup('${overlap.id}')" class="w-full bg-primary-custom text-white font-bold text-[16px] py-4 rounded-xl mb-3 active:bg-dark-green transition-colors">
+                    Оптимизировать
+                </button>
+                <button onclick="goBackToMain()" class="w-full text-gray-500 font-medium text-[14px] py-2 active:text-gray-800 transition-colors">
+                    Оставить всё как есть
+                </button>
+            `;
+        }
+
+        function optimizeGroup(overlapId) {
+            triggerHaptic();
+            const overlap = globalData.overlaps.find(o => o.id === overlapId);
+
+            // Ищем дубли (исключая рекомендованную и уже отмененные)
+            const dupesIds = overlap.subscription_ids.filter(id => id !== overlap.keep_suggestion && !canceledSubs.has(id));
+            if (dupesIds.length === 0) return;
+
+            let maxSub = null;
+            let maxPrice = -1;
+
+            // Находим самую дорогую подписку из оставшихся дублей
+            dupesIds.forEach(id => {
+                const sub = globalData.subscriptions.find(s => s.id === id);
+                if (sub && sub.amount > maxPrice) {
+                    maxPrice = sub.amount;
+                    maxSub = sub;
+                }
+            });
+
+            // Открываем экран отмены
+            if (maxSub) {
+                showCancelScreen(maxSub.id);
+            }
+        }
+
+        // ================= ОБЩАЯ ЛОГИКА =================
+        function markAsCanceled() {
+            if (currentCancelTarget) {
+                canceledSubs.add(currentCancelTarget);
+            }
+            triggerHaptic();
+            updateFreedMoney();
+            renderSubscriptions();
+            updateOverlapsVisibility();
+            goBackToMain();
+        }
+
+        function updateFreedMoney() {
+            let freedAmount = 0;
+            canceledSubs.forEach(id => {
+                const sub = globalData.subscriptions.find(s => s.id === id);
+                if (sub) {
+                    freedAmount += sub.period === 'yearly' ? sub.amount : sub.amount * 12;
+                }
+            });
+
+            const container = document.getElementById('freed-money-container');
+            if (freedAmount > 0) {
+                container.classList.remove('hidden');
+                document.getElementById('freed-money-value').innerText = formatMoney(freedAmount);
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function updateOverlapsVisibility() {
+            const activeOverlaps = getActiveOverlaps();
+            const overlapsContainer = document.getElementById('overlaps-container');
+
+            if (activeOverlaps.length > 0) {
+                overlapsContainer.classList.remove('hidden');
+                document.getElementById('overlap-title-main').innerText = `Найдено пересечений: ${activeOverlaps.length}`;
+            } else {
+                overlapsContainer.classList.add('hidden');
+            }
+        }
+
         function renderSubscriptions() {
             const subsContainer = document.getElementById('subscriptions-list');
             subsContainer.innerHTML = '';
@@ -252,25 +478,28 @@
             document.getElementById('subs-header').innerText = `Активные подписки (${subs.length})`;
 
             subs.forEach(sub => {
-                let dotClass = sub.flag === 'red' ? 'dot-red' : (sub.flag === 'yellow' ? 'dot-yellow' : 'dot-green');
+                const isCanceled = canceledSubs.has(sub.id);
+                const dotClass = isCanceled ? 'dot-gray' : (sub.flag === 'red' ? 'dot-red' : (sub.flag === 'yellow' ? 'dot-yellow' : 'dot-green'));
+                const statusText = isCanceled ? 'Отменена' : sub.reason;
+                const opacityClass = isCanceled ? 'opacity-60 grayscale' : '';
+                const priceClass = isCanceled ? 'line-through text-gray-400' : 'text-main-custom';
+                const clickHandler = isCanceled ? '' : `onclick="showCancelScreen('${sub.id}')"`;
                 const initial = sub.name.charAt(0).toUpperCase();
                 const avatarStyles = getAvatarColor(sub.name);
                 const periodSuffix = sub.period === 'yearly' ? '₽/год' : '₽/мес';
 
                 const cardHTML = `
-                    <div class="bg-card-custom p-4 rounded-[16px] shadow-sm active:bg-gray-200 transition-colors" onclick="triggerHaptic()">
+                    <div class="bg-card-custom p-4 rounded-[16px] shadow-sm ${opacityClass} ${isCanceled ? '' : 'active:bg-gray-200 cursor-pointer'} transition-all" ${clickHandler}>
                         <div class="flex justify-between items-center mb-2.5">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full ${avatarStyles} flex items-center justify-center font-bold text-[16px]">
-                                    ${initial}
-                                </div>
+                                <div class="w-10 h-10 rounded-full ${avatarStyles} flex items-center justify-center font-bold text-[16px]">${initial}</div>
                                 <h3 class="font-bold text-[16px] text-main-custom">${sub.name}</h3>
                             </div>
-                            <span class="text-[16px] font-bold text-main-custom">${formatMoney(sub.amount)} ${periodSuffix}</span>
+                            <span class="text-[16px] font-bold ${priceClass}">${formatMoney(sub.amount)} ${periodSuffix}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="w-[6px] h-[6px] rounded-full flex-shrink-0 ${dotClass}"></span>
-                            <span class="text-[11px] text-gray-500 font-medium leading-tight">${sub.reason}</span>
+                            <span class="text-[11px] text-gray-500 font-medium leading-tight">${statusText}</span>
                         </div>
                     </div>
                 `;
@@ -280,49 +509,11 @@
 
         function renderApp(data) {
             globalData = data;
-
             document.getElementById('monthly-total-value').innerHTML = `${formatMoney(data.summary.monthly_total)} ₽<span class="text-[16px] font-medium text-white/90">/мес</span>`;
             document.getElementById('yearly-savings').innerText = `Экономия ${formatMoney(data.summary.potential_savings_yearly)} ₽/год`;
 
-            const overlapGroups = data.overlaps ? data.overlaps.length : 0;
-            if (overlapGroups > 0) {
-                document.getElementById('overlaps-container').classList.remove('hidden');
-                document.getElementById('overlap-title-main').innerText = `Найдено пересечений: ${overlapGroups}`;
-
-                const overlap = data.overlaps[0];
-                document.getElementById('overlap-total-savings').innerText = `${formatMoney(overlap.savings_yearly)} ₽/год`;
-                document.getElementById('overlap-explanation-badge').innerText = overlap.explanation;
-                document.getElementById('overlap-recommendation-text').innerText = overlap.recommendation || "Отключите дублирующие сервисы для экономии.";
-
-                const overlapSubsContainer = document.getElementById('overlap-services-list');
-                overlapSubsContainer.innerHTML = '';
-
-                const dupes = (overlap.services || []).map(name => data.subscriptions.find(s => s.name === name)).filter(Boolean);
-
-                dupes.forEach(sub => {
-                    const initial = sub.name.charAt(0).toUpperCase();
-                    const avatarStyles = getAvatarColor(sub.name);
-                    const periodSuffix = sub.period === 'yearly' ? '₽/год' : '₽/мес';
-
-                    overlapSubsContainer.innerHTML += `
-                        <div class="bg-card-custom p-4 rounded-[16px]">
-                            <div class="flex justify-between items-center mb-2.5">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full ${avatarStyles} flex items-center justify-center font-bold text-[16px]">${initial}</div>
-                                    <h3 class="font-bold text-[16px] text-main-custom">${sub.name}</h3>
-                                </div>
-                                <span class="text-[16px] font-bold text-main-custom">${formatMoney(sub.amount)} ${periodSuffix}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="w-[6px] h-[6px] rounded-full flex-shrink-0 dot-red"></span>
-                                <span class="text-[11px] text-gray-500 font-medium leading-tight">${sub.reason}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
             renderSubscriptions();
+            updateOverlapsVisibility();
         }
 
         async function loadRealData() {
