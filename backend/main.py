@@ -110,10 +110,11 @@ async def analyze(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Файл пуст")
 
     ext = Path(file.filename or "").suffix.lower()
-    if ext not in {".csv", ".xlsx", ".xls", ".txt"}:
+    if ext not in {".csv", ".xlsx", ".xls", ".txt", ".pdf"}:
         raise HTTPException(
             status_code=400,
-            detail=f"Формат {ext or '?'} не поддерживается. Нужен CSV или XLSX.",
+            detail=f"Формат {ext or '?'} не поддерживается. "
+                   "Нужен PDF, CSV или XLSX.",
         )
 
     return run_pipeline(content, file.filename or "")

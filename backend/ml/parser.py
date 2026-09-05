@@ -76,9 +76,79 @@ def _sniff_delimiter(sample: str) -> str:
     return max(counts, key=counts.get) if max(counts.values()) else ";"
 
 
+# Строка PDF-выписки: дата, потом текст, в конце сумма со знаком
+PDF_LINE = re.compile(
+    r"^(\d{2}[.\-/]\d{2}[.\-/]\d{2,4})\s+(.+?)\s+"
+    r"([-\u2212+]?[\d\s\u00a0]{1,15}[.,]\d{2})\s*(?:₽|RUB|руб\.?)?$"
+)
+
+
+def parse_pdf(content: bytes) -> list[dict]:
+    """Выписка в PDF. Сначала пробуем таблицу, потом разбор построчно.
+
+    Таблица даёт чистые колонки, но в выписках некоторых банков рамок нет —
+    тогда работает регулярка: дата в начале строки, сумма в конце.
+    """
+    try:
+        import pdfplumber
+    except ImportError:
+        raise ValueError(
+            "Для чтения PDF нужен пакет pdfplumber: pip install pdfplumber"
+        )
+
+    rows: list[list[str]] = []
+    lines: list[str] = []
+    with pdfplumber.open(io.BytesIO(content)) as pdf:
+        for page in pdf.pages:
+            for table in page.extract_tables() or []:
+                for row in table:
+                    cleaned = [(c or "").replace("\n", " ").strip()
+                               for c in row]
+                    if len(cleaned) >= 3:
+                        rows.append(cleaned)
+            lines += (page.extract_text() or "").split("\n")
+
+    transactions: list[dict] = []
+
+    # Вариант 1: в PDF есть размеченная таблица
+    for i, row in enumerate(rows, start=1):
+        d = _parse_date(row[0])
+        amount = _parse_amount(row[-1])
+        if d is None or amount is None:
+            continue
+        desc = " ".join(c for c in row[1:-1] if c).strip()
+        if not desc:
+            continue
+        transactions.append({
+            "id": f"tx_{len(transactions) + 1:05d}",
+            "date": d, "amount": amount, "currency": "RUB",
+            "raw_description": desc, "mcc": None,
+        })
+    if transactions:
+        return transactions
+
+    # Вариант 2: таблицы нет, разбираем текст построчно
+    for line in lines:
+        m = PDF_LINE.match(line.strip())
+        if not m:
+            continue
+        d = _parse_date(m.group(1))
+        amount = _parse_amount(m.group(3))
+        if d is None or amount is None:
+            continue
+        transactions.append({
+            "id": f"tx_{len(transactions) + 1:05d}",
+            "date": d, "amount": amount, "currency": "RUB",
+            "raw_description": m.group(2).strip(), "mcc": None,
+        })
+    return transactions
+
+
 def parse_statement(content: bytes | str) -> list[dict]:
     """Разбирает выписку. Возвращает список словарей схемы Transaction."""
     if isinstance(content, bytes):
+        if content[:5] == b"%PDF-":
+            return parse_pdf(content)
         text = content.decode("utf-8-sig", errors="replace")
     else:
         text = content

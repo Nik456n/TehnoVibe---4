@@ -5,3 +5,5 @@ python-dotenv>=1.0
 httpx>=0.27
 gigachat>=0.1.29
 aiogram>=3.13
+pdfplumber>=0.11
+reportlab>=4.0
