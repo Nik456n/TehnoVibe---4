@@ -8,6 +8,8 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 # ИСПРАВЛЕНО: добавлен CORS — без него Mini App с другого домена
 # не сможет обратиться к бэкенду, браузер заблокирует запросы
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 # ИСПРАВЛЕНО: ключи читаем из .env, а не из кода
 from dotenv import load_dotenv
@@ -48,6 +50,7 @@ MOCK_FILE = ROOT / "contracts" / "mock_analyze_response.json"
 CANCEL_KB = ROOT / "data" / "cancel_kb.json"
 
 MOCK = json.loads(MOCK_FILE.read_text(encoding="utf-8"))
+FRONTEND_DIR = ROOT / "frontend"
 
 # ============================================
 # НАСТРОЙКА GigaChat
@@ -317,3 +320,27 @@ async def analyze_with_ai(file: UploadFile = File(...)):
             )
 
     return result
+
+
+# ============================================
+# РАЗДАЧА MINI APP
+# ============================================
+# Фронт отдаётся тем же сервером, что и API. Благодаря этому адрес
+# бэкенда на фронте всегда равен location.origin — работает и на
+# локалхосте, и через туннель, и менять его в коде не нужно.
+#
+# Монтируется в самом конце: иначе StaticFiles на "/" перехватил бы
+# запросы к /analyze и остальным эндпоинтам.
+if FRONTEND_DIR.exists():
+    @app.get("/", include_in_schema=False)
+    async def index():
+        for name in ("index.html", "app.html", "main.html"):
+            candidate = FRONTEND_DIR / name
+            if candidate.exists():
+                return FileResponse(candidate)
+        raise HTTPException(
+            status_code=404,
+            detail="В папке frontend/ нет index.html",
+        )
+
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR), name="frontend")
