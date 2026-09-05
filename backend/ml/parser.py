@@ -116,13 +116,17 @@ def parse_pdf(content: bytes) -> list[dict]:
         amount = _parse_amount(row[-1])
         if d is None or amount is None:
             continue
-        desc = " ".join(c for c in row[1:-1] if c).strip()
-        if not desc:
+        # Последняя непустая колонка перед суммой — описание операции.
+        # Всё, что левее, это категория банка, её в описание не тащим.
+        middle = [c for c in row[1:-1] if c]
+        if not middle:
             continue
+        desc = middle[-1]
+        category = middle[0] if len(middle) > 1 else None
         transactions.append({
             "id": f"tx_{len(transactions) + 1:05d}",
             "date": d, "amount": amount, "currency": "RUB",
-            "raw_description": desc, "mcc": None,
+            "raw_description": desc, "mcc": category,
         })
     if transactions:
         return transactions

@@ -304,7 +304,15 @@ def detect(transactions: list[dict],
             continue
         group_id = f"{category}_overlap"
         bundle = next((s for s in subs if s["name"] in BUNDLES), None)
-        keeper = bundle or min(subs, key=lambda s: s["yearly_cost"])
+        if bundle:
+            keeper = bundle
+        else:
+            # Сначала отбираем активные: у кого списаний не меньше,
+            # чем у самого регулярного в группе. Дешёвый, но заброшенный
+            # сервис рекомендовать к сохранению неправильно.
+            top = max(s["occurrences"] for s in subs)
+            active = [s for s in subs if s["occurrences"] >= top] or subs
+            keeper = min(active, key=lambda s: s["yearly_cost"])
         savings = round(
             sum(s["yearly_cost"] for s in subs if s["id"] != keeper["id"]), 2
         )
