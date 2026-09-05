@@ -23,6 +23,10 @@ from typing import Any, Protocol
 ROOT = Path(__file__).resolve().parent.parent.parent
 PROMPTS_DIR = ROOT / "ai_core" / "prompts"
 CACHE_FILE = ROOT / "data" / "llm_cache.json"
+MERCHANTS_CSV = ROOT / "data" / "merchants.csv"
+
+# Модель охотнее отвечает по-английски, если её об этом не попросить
+RU_ONLY = "\n\nВесь текст в ответе — на русском языке."
 
 BATCH_SIZE = 20
 TEMPERATURE = 0.2
@@ -47,9 +51,14 @@ class LLMProvider(Protocol):
 
 
 class GigaChatProvider:
-    def __init__(self, credentials: str, model: str | None = None) -> None:
+    def __init__(self, credentials: str, model: str | None = None,
+                 scope: str | None = None) -> None:
         self.credentials = credentials
         self.model = model
+        # Версия API зашита в сам ключ, но её передают явно — так
+        # надёжнее. GIGACHAT_API_PERS для физлиц, _B2B и _CORP для
+        # юрлиц и ИП.
+        self.scope = scope or "GIGACHAT_API_PERS"
 
     def complete(self, system: str, user: str) -> str | None:
         try:
@@ -60,6 +69,7 @@ class GigaChatProvider:
 
         try:
             with GigaChat(credentials=self.credentials,
+                          scope=self.scope,
                           verify_ssl_certs=False, timeout=30) as giga:
                 payload = Chat(
                     messages=[
@@ -80,10 +90,24 @@ def get_provider() -> LLMProvider | None:
     key = os.getenv("LLM_API_KEY", "").strip()
     if not key:
         return None
-    return GigaChatProvider(key, os.getenv("LLM_MODEL") or None)
+    return GigaChatProvider(
+        key,
+        os.getenv("LLM_MODEL") or None,
+        os.getenv("LLM_SCOPE") or None,
+    )
 
 
 # ─────────────────────────── утилиты ───────────────────────────
+
+
+def known_services() -> set[str]:
+    """Сервисы из словаря мерчантов. Их модель переименовывать не должна."""
+    import csv
+    if not MERCHANTS_CSV.exists():
+        return set()
+    with MERCHANTS_CSV.open(encoding="utf-8-sig") as f:
+        return {(r.get("canonical_name") or "").strip()
+                for r in csv.DictReader(f)}
 
 
 def load_prompt(name: str) -> str:
@@ -174,7 +198,7 @@ def categorize(raw_names: list[str], provider: LLMProvider,
     if not todo:
         return result
 
-    system = load_prompt("normalize.md") or (
+    system = (load_prompt("normalize.md") or "") + RU_ONLY or (
         "Ты определяешь, какому сервису принадлежит строка из банковской "
         "выписки. Верни только JSON."
     )
@@ -234,7 +258,7 @@ def build_plan(result: dict, provider: LLMProvider, cache: Cache) -> bool:
     key = "plan:" + json.dumps(brief, ensure_ascii=False, sort_keys=True)
     parsed = cache.get(key)
     if parsed is None:
-        system = load_prompt("plan.md") or (
+        system = (load_prompt("plan.md") or "") + RU_ONLY or (
             "Ты финансовый советник. По списку подписок предложи, что "
             "отключить в первую очередь и что оставить. Только JSON."
         )
@@ -250,6 +274,7 @@ def build_plan(result: dict, provider: LLMProvider, cache: Cache) -> bool:
         return False
 
     by_id = {s["id"]: s for s in subs}
+    reds = {s["id"] for s in subs if s["flag"] == "red"}
     plan = []
     for i, item in enumerate(items, start=1):
         if not isinstance(item, dict):
@@ -269,6 +294,11 @@ def build_plan(result: dict, provider: LLMProvider, cache: Cache) -> bool:
             "savings_yearly": (by_id[sub_id]["yearly_cost"]
                                if action == "cancel" else 0.0),
         })
+    # Модель обязана предложить отключить все дубли, найденные алгоритмом.
+    # Если она их проигнорировала — её план хуже нашего, оставляем свой.
+    covered = {p["subscription_id"] for p in plan if p["action"] == "cancel"}
+    if plan and reds and not reds.issubset(covered):
+        return False
     if plan:
         result["plan"] = plan
         return True
@@ -294,7 +324,7 @@ def explain_overlaps(result: dict, provider: LLMProvider,
                + ",".join(sorted(names.get(i, i) for i in group["subscription_ids"])))
         text = cache.get(key)
         if text is None:
-            system = load_prompt("overlaps.md") or (
+            system = (load_prompt("overlaps.md") or "") + RU_ONLY or (
                 "Объясни в одном-двух предложениях, почему эти подписки "
                 "дублируют друг друга. Только текст, без JSON."
             )
@@ -318,7 +348,12 @@ def explain_overlaps(result: dict, provider: LLMProvider,
                 # ответить «Конечно, вот ваш ответ» — такое в интерфейс
                 # попадать не должно. Остаётся шаблон детектора.
                 text = ""
-            if not text:
+            # Объяснение должно объяснять, а не пересказывать цифру.
+            # Требуем, чтобы модель назвала хотя бы два сервиса группы —
+            # иначе это «оставляем X, экономия N рублей», и шаблон
+            # детектора для пользователя понятнее.
+            named = sum(1 for m in members if m["name"] in str(text))
+            if not text or len(str(text)) < 50 or named < 2:
                 continue
             cache.set(key, text)
         group["explanation"] = str(text)[:400]
@@ -340,7 +375,7 @@ def cancel_instruction(service_name: str, provider: LLMProvider,
     key = f"cancel:{service_name}"
     parsed = cache.get(key)
     if parsed is None:
-        system = load_prompt("cancel.md") or (
+        system = (load_prompt("cancel.md") or "") + RU_ONLY or (
             "Опиши, как отменить подписку на сервис. Верни только JSON "
             'вида {"difficulty": "easy|medium|hard", "steps": ["..."], '
             '"url": "https://..."}. Если не уверен — steps оставь общими, '
@@ -370,7 +405,7 @@ def write_letter(service_name: str, provider: LLMProvider,
     key = f"letter:{service_name}"
     text = cache.get(key)
     if text is None:
-        system = load_prompt("letter.md") or (
+        system = (load_prompt("letter.md") or "") + RU_ONLY or (
             "Напиши короткое деловое письмо в поддержку сервиса с просьбой "
             "отключить автопродление подписки. Русский язык, плейсхолдеры "
             "[имя] и [email]. Только текст письма."
@@ -398,8 +433,12 @@ def enrich(result: dict, provider: LLMProvider | None = None,
     used = False
     try:
         # 1. Неопознанные сервисы: у них имя совпадает с описанием из выписки
+        # Только сервисы вне словаря. Если аналитик уже определил
+        # категорию, модель не имеет права её переписывать — иначе
+        # Apple Services превращается в iTunes и уезжает в музыку.
+        known = known_services()
         unknown = [s for s in result["subscriptions"]
-                   if s["category"] == "other" and s["raw_names"]]
+                   if s["raw_names"] and s["name"] not in known]
         if unknown:
             mapping = categorize([s["raw_names"][0] for s in unknown],
                                  provider, cache)

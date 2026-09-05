@@ -16,6 +16,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from dotenv import load_dotenv                  # noqa: E402
+
+load_dotenv(ROOT / ".env")
+
 from backend.ml import llm                      # noqa: E402
 from backend.ml.detector import detect          # noqa: E402
 from backend.ml.parser import parse_statement   # noqa: E402
