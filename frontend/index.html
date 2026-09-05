@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Управление подписками</title>
+
+    <!-- Подключаем шрифт Manrope из спецификации -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            /* Палитра из спецификации */
+            --primary-green: #21A038;
+            --dark-green: #107F27;
+            --near-black: #1A1A1A;
+            --bg-card: #F3F4F6;
+
+            --flag-red: #E64646;
+            --flag-yellow: #FF8C00;
+            --flag-green: #2FA84F;
+            --blue-interactive: #0A84FF;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            color: var(--near-black);
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Утилита для скрытия скроллбара в фильтрах */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Классы для точек статуса */
+        .dot-red {
+            background-color: var(--flag-red);
+        }
+
+        .dot-yellow {
+            background-color: var(--flag-yellow);
+        }
+
+        .dot-green {
+            background-color: var(--flag-green);
+        }
+
+        .bg-primary-custom {
+            background-color: var(--primary-green);
+        }
+
+        .bg-card-custom {
+            background-color: var(--bg-card);
+        }
+
+        .text-main-custom {
+            color: var(--near-black);
+        }
+
+        .border-warning {
+            border-color: var(--flag-yellow);
+        }
+
+        .text-warning {
+            color: var(--flag-yellow);
+        }
+    </style>
+</head>
+
+<body class="p-4 pb-12">
+
+    <!-- ================= ШАПКА ================= -->
+    <div class="bg-primary-custom text-white rounded-xl p-5 mb-5 shadow-sm" onclick="triggerHaptic()">
+        <div class="text-[11px] font-bold uppercase tracking-wider mb-2 opacity-90">
+            Расход на подписки
+        </div>
+
+        <div class="flex items-center gap-3 mb-4">
+            <div class="text-[28px] font-extrabold leading-none" id="monthly-total-value">
+                0 ₽<span class="text-[16px] font-medium text-white/90">/мес</span>
+            </div>
+            <div class="bg-white/20 text-[11px] font-medium px-2 py-1 rounded-md" id="yearly-savings">
+                Экономия 0 ₽/год
+            </div>
+        </div>
+
+        <!-- Предупреждение внутри шапки -->
+        <div class="bg-black/10 rounded-lg p-2.5 flex items-center gap-2" id="header-alert">
+            <span class="w-[8px] h-[8px] rounded-full dot-yellow flex-shrink-0"></span>
+            <span class="text-[11px] font-medium" id="header-alert-text">Анализируем подписки...</span>
+        </div>
+    </div>
+
+    <!-- ================= ФИЛЬТРЫ (КАТЕГОРИИ) ================= -->
+    <div class="flex gap-2 overflow-x-auto no-scrollbar mb-6">
+        <button class="bg-primary-custom text-white px-4 py-1.5 rounded-full text-[14px] font-medium whitespace-nowrap"
+            onclick="triggerHaptic()">Все</button>
+        <button
+            class="bg-card-custom text-main-custom px-4 py-1.5 rounded-full text-[14px] font-medium whitespace-nowrap"
+            onclick="triggerHaptic()">Кино</button>
+        <button
+            class="bg-card-custom text-main-custom px-4 py-1.5 rounded-full text-[14px] font-medium whitespace-nowrap"
+            onclick="triggerHaptic()">Музыка</button>
+        <button
+            class="bg-card-custom text-main-custom px-4 py-1.5 rounded-full text-[14px] font-medium whitespace-nowrap"
+            onclick="triggerHaptic()">Облако</button>
+        <button
+            class="bg-card-custom text-main-custom px-4 py-1.5 rounded-full text-[14px] font-medium whitespace-nowrap"
+            onclick="triggerHaptic()">Спорт</button>
+    </div>
+
+    <!-- ================= СПИСОК ПОДПИСОК ================= -->
+    <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3 px-1" id="subs-header">
+        Активные подписки (0)
+    </div>
+
+    <div id="subscriptions-list" class="space-y-3 mb-6">
+        <!-- Карточки генерируются JS -->
+    </div>
+
+    <!-- ================= БЛОК ПЕРЕСЕЧЕНИЙ (НИЖНИЙ) ================= -->
+    <div id="overlaps-container" class="hidden">
+        <div class="border border-warning rounded-2xl p-4 flex items-center justify-between bg-white shadow-sm active:bg-gray-50 transition-colors"
+            onclick="triggerHaptic()">
+            <div class="flex gap-3 items-start">
+                <!-- Иконка предупреждения -->
+                <div
+                    class="w-6 h-6 flex items-center justify-center border-2 border-warning rounded-md text-warning font-bold text-[14px] flex-shrink-0">
+                    !
+                </div>
+                <div>
+                    <div class="text-[14px] font-bold text-main-custom mb-0.5" id="overlap-title">Найдено пересечений: 0
+                    </div>
+                    <div class="text-[11px] text-gray-500 font-medium">Вы переплачиваете за дублирующий функционал</div>
+                </div>
+            </div>
+            <div class="text-gray-400">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+        }
+
+        // Функция вызова тактильной отдачи (Haptic Feedback)
+        function triggerHaptic() {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            }
+        }
+
+        // Мок данных 
+        // Функция, которая идет на твой локальный бэкенд и забирает настоящий JSON
+        async function loadRealData() {
+            try {
+                // Стучимся в эндпоинт, который ты поднимал на FastAPI
+                const response = await fetch('http://127.0.0.1:8000/analyze/demo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ответ сервера не OK');
+                }
+
+                // Получаем полные данные (все 11 подписок из контракта)
+                const realData = await response.json();
+
+                // Отдаем их нашей функции рисования
+                renderApp(realData);
+
+            } catch (error) {
+                console.error("Ошибка при запросе к бэкенду:", error);
+                document.getElementById('subscriptions-list').innerHTML = `
+            <div class="text-center p-5 text-gray-500 text-[12px]">
+                Бэкенд не доступен.<br>Проверь, запущен ли <b>uvicorn backend.main:app --reload</b> в терминале.
+            </div>
+        `;
+            }
+        }
+
+        // Запускаем загрузку!
+        loadRealData();;
+
+        // Цвета аватарок как на макете
+        function getAvatarColor(name) {
+            if (name.includes('Кино')) return 'bg-[#FFD940] text-gray-900'; // Желтый для Кинопоиска
+            if (name.includes('Okko')) return 'bg-[#5021A0] text-white';    // Фиолетовый
+            if (name.includes('Яндекс')) return 'bg-[#E64646] text-white';  // Красный
+            if (name.includes('Сбер')) return 'bg-[#2FA84F] text-white';    // Зеленый
+            return 'bg-blue-500 text-white';
+        }
+
+        function formatMoney(num) {
+            return Number(num).toLocaleString('ru-RU');
+        }
+
+        function renderApp(data) {
+            // Шапка
+            document.getElementById('monthly-total-value').innerHTML = `${formatMoney(data.summary.monthly_total)} ₽<span class="text-[16px] font-medium text-white/90">/мес</span>`;
+            document.getElementById('yearly-savings').innerText = `Экономия ${formatMoney(data.summary.potential_savings_yearly)} ₽/год`;
+
+            // Количество подписок
+            const totalSubs = 11; // Ставим 11 по макету (даже если в массиве сейчас 4 для примера)
+            document.getElementById('subs-header').innerText = `Активные подписки (${totalSubs})`;
+
+            // Оповещение внутри шапки
+            if (data.overlaps && data.overlaps.length > 0) {
+                const groups = data.overlaps[0].groups_count || 2;
+                document.getElementById('header-alert-text').innerText = `Найдено ${groups} группы пересекающихся подписок`;
+            }
+
+            // Список подписок
+            const subsContainer = document.getElementById('subscriptions-list');
+            subsContainer.innerHTML = '';
+
+            data.subscriptions.forEach(sub => {
+                let dotClass = 'dot-green';
+                if (sub.flag === 'red') dotClass = 'dot-red';
+                else if (sub.flag === 'yellow') dotClass = 'dot-yellow';
+
+                const initial = sub.name.charAt(0).toUpperCase();
+                const avatarStyles = getAvatarColor(sub.name);
+
+                const cardHTML = `
+                    <div class="bg-card-custom p-4 rounded-[16px] shadow-sm active:bg-gray-200 transition-colors" onclick="triggerHaptic()">
+                        <div class="flex justify-between items-center mb-2.5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full ${avatarStyles} flex items-center justify-center font-bold text-[16px]">
+                                    ${initial}
+                                </div>
+                                <h3 class="font-bold text-[16px] text-main-custom">${sub.name}</h3>
+                            </div>
+                            <span class="text-[16px] font-bold text-main-custom">${formatMoney(sub.amount)} ₽</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-2">
+                            <span class="w-[6px] h-[6px] rounded-full flex-shrink-0 ${dotClass}"></span>
+                            <span class="text-[11px] text-gray-500 font-medium leading-tight">${sub.reason}</span>
+                        </div>
+                    </div>
+                `;
+                subsContainer.innerHTML += cardHTML;
+            });
+
+            // Блок пересечений (в самом низу)
+            if (data.overlaps && data.overlaps.length > 0) {
+                document.getElementById('overlaps-container').classList.remove('hidden');
+                document.getElementById('overlap-title').innerText = `Найдено пересечений: ${data.overlaps[0].groups_count || 2}`;
+            }
+        }
+
+        renderApp(mockData);
+    </script>
+</body>
+
+</html>
