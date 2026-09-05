@@ -201,11 +201,13 @@ def _yearly(amount: float, period: str) -> float:
 
 
 def _initial_reason(occurrences: int, median_amount: float,
-                    current: float) -> str:
+                    current: float, period: str = "") -> str:
     """Заметки, которые видны до анализа пересечений."""
+    if occurrences == 1 and period == "yearly":
+        return "Годовая подписка — одно списание за весь период выписки"
     if occurrences == 1:
-        return ("Одно списание за период — период взят из справочника, "
-                "уточнится после следующего платежа")
+        return ("Одно списание за период — период уточнится "
+                "после следующего платежа")
     if abs(current - median_amount) > 1:
         return f"Цена выросла с {median_amount:.0f} до {current:.0f} ₽"
     return ""
@@ -297,7 +299,7 @@ def detect(transactions: list[dict],
                 "yearly_cost": _yearly(current, period),
                 "flag": "yellow",
                 "overlap_group": None,
-                "reason": _initial_reason(len(cluster), amount, current),
+                "reason": _initial_reason(len(cluster), amount, current, period),
             })
 
     subscriptions.sort(key=lambda s: -s["yearly_cost"])
