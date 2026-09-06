@@ -167,8 +167,8 @@ _OVERRIDE: str | None = None
 
 PROVIDERS = {
     "gigachat": "GigaChat (облако)",
-    "local": "Gemma 4 E4B (локально)",
-    "http": "Локальная модель по сети",
+    "local": "Gemma 4 E4B (на этой машине)",
+    "http": "Gemma 4 E4B (наш GPU, по сети)",
 }
 
 
