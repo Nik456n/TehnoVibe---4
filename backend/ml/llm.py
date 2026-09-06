@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import sys
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -86,7 +87,102 @@ class GigaChatProvider:
             return None
 
 
+class LocalGemmaProvider:
+    """Локальная gemma-4-E4B через модуль ai_core/gemma4_local.py.
+
+    Работает, только если бэкенд запущен на машине с GPU — например,
+    весь пайплайн крутится в ноутбуке Kaggle. Модель загружается один
+    раз при первом обращении и остаётся в памяти.
+    """
+
+    def __init__(self, **kwargs) -> None:
+        self._client = None
+        self._kwargs = kwargs
+
+    def complete(self, system: str, user: str) -> str | None:
+        try:
+            if self._client is None:
+                sys.path.insert(0, str(ROOT / "ai_core"))
+                from gemma4_local import Gemma4
+                self._client = Gemma4(**self._kwargs)
+            # greedy=True: для структурного вывода воспроизводимость
+            # важнее разнообразия, а сэмплинг только ломает формат
+            return self._client.generate(user, system=system, greedy=True)
+        except Exception:
+            return None
+
+
+class HttpLLMProvider:
+    """Любая модель за HTTP: vLLM, Ollama, LM Studio, свой сервер на Kaggle.
+
+    Понимает два формата ответа — OpenAI-совместимый и простой
+    {"text": "..."}. Благодаря этому подходит почти к любому серверу
+    без правок кода.
+    """
+
+    def __init__(self, base_url: str, model: str | None = None,
+                 timeout: int = 60) -> None:
+        self.base_url = base_url.rstrip("/")
+        self.model = model or "local"
+        self.timeout = timeout
+
+    def complete(self, system: str, user: str) -> str | None:
+        try:
+            import urllib.request
+
+            payload = json.dumps({
+                "model": self.model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ],
+                "temperature": TEMPERATURE,
+                "stream": False,
+            }).encode("utf-8")
+
+            url = self.base_url
+            if not url.endswith(("/completions", "/generate")):
+                url += "/v1/chat/completions"
+
+            req = urllib.request.Request(
+                url, data=payload,
+                headers={"Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=self.timeout) as r:
+                data = json.loads(r.read().decode("utf-8"))
+
+            if "choices" in data:
+                return data["choices"][0]["message"]["content"]
+            return data.get("text") or data.get("response")
+        except Exception:
+            return None
+
+
 def get_provider() -> LLMProvider | None:
+    """Выбирает модель по переменной LLM_PROVIDER.
+
+    gigachat — по умолчанию, облако, ключ в LLM_API_KEY
+    local    — gemma-4-E4B в том же процессе, нужен GPU
+    http     — любая модель за HTTP, адрес в LLM_BASE_URL
+
+    Смена провайдера не требует правок в коде: остальной слой работает
+    через один и тот же метод complete().
+    """
+    kind = os.getenv("LLM_PROVIDER", "gigachat").strip().lower()
+
+    if kind == "local":
+        return LocalGemmaProvider(
+            max_new_tokens=int(os.getenv("LLM_MAX_TOKENS", "512")),
+            hf_token=os.getenv("HF_TOKEN"),
+        )
+
+    if kind == "http":
+        base = os.getenv("LLM_BASE_URL", "").strip()
+        return HttpLLMProvider(base, os.getenv("LLM_MODEL")) if base else None
+
+    return _gigachat_provider()
+
+
+def _gigachat_provider() -> LLMProvider | None:
     key = os.getenv("LLM_API_KEY", "").strip()
     if not key:
         return None
