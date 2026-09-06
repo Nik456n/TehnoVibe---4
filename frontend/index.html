@@ -508,11 +508,29 @@
         }
 
         async function loadRealData() {
+            const rid = new URLSearchParams(location.search).get('rid');
+
             try {
-                const response = await fetch(BACKEND_URL + '/analyze/demo', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
+                let response;
+                if (rid) {
+                    // Пробуем получить готовый результат по ID (GET-запрос)
+                    response = await fetch(`${BACKEND_URL}/results/${rid}`);
+
+                    // Если результат не найден (404), падаем на /analyze/demo
+                    if (response.status === 404) {
+                        console.warn(`Результат для rid=${rid} не найден, переключаемся на демо`);
+                        response = await fetch(`${BACKEND_URL}/analyze/demo`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                    }
+                } else {
+                    // Если rid нет в URL, стандартно запрашиваем демо
+                    response = await fetch(`${BACKEND_URL}/analyze/demo`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
 
                 if (!response.ok) throw new Error('Ошибка сети');
                 const realData = await response.json();
