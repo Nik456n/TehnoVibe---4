@@ -139,7 +139,7 @@
 
         <div class="bg-card-custom p-5 rounded-2xl mb-8">
             <h3 class="font-bold text-[16px] text-main-custom mb-4">Как отменить подписку:</h3>
-            <ol class="list-decimal pl-4 space-y-3 text-[14px] text-gray-700 font-medium">
+            <ol id="cancel-steps-list" class="list-decimal pl-4 space-y-3 text-[14px] text-gray-700 font-medium">
                 <li>Перейдите в настройки вашего аккаунта в сервисе.</li>
                 <li>Откройте раздел «Подписки» или «Платежи».</li>
                 <li>Нажмите на кнопку управления подпиской и выберите «Отменить».</li>
@@ -262,15 +262,49 @@
             }
         }
 
-        function showCancelScreen(subId) {
+        async function showCancelScreen(subId) {
             triggerHaptic();
             currentCancelTarget = subId;
             const sub = globalData.subscriptions.find(s => s.id === subId);
             document.getElementById('cancel-sub-name').innerText = sub.name;
+
+            const stepsContainer = document.getElementById('cancel-steps-list');
+            const cardDiv = stepsContainer.closest('.bg-card-custom');
+
+            // Сброс на дефолтный текст (фолбэк) и удаление старой ссылки
+            stepsContainer.innerHTML = `
+        <li>Перейдите в настройки вашего аккаунта в сервисе.</li>
+        <li>Откройте раздел «Подписки» или «Платежи».</li>
+        <li>Нажмите на кнопку управления подпиской и выберите «Отменить».</li>
+    `;
+            const oldLink = document.getElementById('cancel-service-link');
+            if (oldLink) oldLink.remove();
+
             document.getElementById('screen-main').classList.add('hidden');
             document.getElementById('screen-overlaps').classList.add('hidden');
             document.getElementById('screen-cancel').classList.remove('hidden');
             setupBackButton(goBackToMain);
+
+            try {
+                const r = await fetch(`${BACKEND_URL}/cancel/${encodeURIComponent(sub.name)}`);
+                if (r.ok) {
+                    const instr = await r.json();
+                    if (instr.steps && instr.steps.length > 0) {
+                        stepsContainer.innerHTML = instr.steps.map(step => `<li>${step}</li>`).join('');
+                    }
+                    if (instr.url) {
+                        cardDiv.insertAdjacentHTML('beforeend', `
+                    <div id="cancel-service-link" class="mt-4 pt-4 border-t border-gray-200">
+                        <a href="${instr.url}" target="_blank" class="text-[14px] font-bold text-primary-custom hover:underline block">
+                            Перейти на сайт сервиса →
+                        </a>
+                    </div>
+                `);
+                    }
+                }
+            } catch (error) {
+                console.error("Не удалось загрузить базу отмены, используется фолбэк:", error);
+            }
         }
 
         function goBackToMain() {
