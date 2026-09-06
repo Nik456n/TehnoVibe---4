@@ -212,6 +212,37 @@ async def cancel(subscription_id: str):
     }
 
 
+# ============================================
+# ВЫБОР МОДЕЛИ
+# ============================================
+# Бот показывает эти варианты кнопками. Поле available говорит, жива ли
+# модель прямо сейчас — локальная сессия может быть закрыта, и лучше
+# показать «недоступна» заранее, чем выдать ошибку после нажатия.
+@app.get("/providers")
+async def providers():
+    return {"providers": llm.provider_status()}
+
+
+@app.post("/providers/{kind}")
+async def switch_provider(kind: str):
+    if not llm.set_kind(kind):
+        raise HTTPException(
+            status_code=404,
+            detail=f"Неизвестная модель: {kind}. "
+                   f"Доступны: {', '.join(llm.PROVIDERS)}",
+        )
+    available = llm.probe(kind)
+    return {
+        "active": kind,
+        "name": llm.PROVIDERS[kind],
+        "available": available,
+        "message": ("Модель переключена"
+                    if available else
+                    "Модель выбрана, но сейчас недоступна — "
+                    "анализ пойдёт на детекторе без неё"),
+    }
+
+
 # Обработка POST-запроса для загрузки файла пользователем (просто метаданные)
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):

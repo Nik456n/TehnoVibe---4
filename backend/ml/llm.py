@@ -157,8 +157,80 @@ class HttpLLMProvider:
             return None
 
 
+# Провайдер, выбранный в рантайме. Пока не задан — берём из окружения.
+# Нужен, чтобы переключать модель кнопкой в боте без перезапуска.
+_OVERRIDE: str | None = None
+
+PROVIDERS = {
+    "gigachat": "GigaChat (облако)",
+    "local": "Gemma 4 E4B (локально)",
+    "http": "Локальная модель по сети",
+}
+
+
+def current_kind() -> str:
+    return _OVERRIDE or os.getenv("LLM_PROVIDER", "gigachat").strip().lower()
+
+
+def set_kind(kind: str) -> bool:
+    """Переключает провайдера. False, если такого нет."""
+    global _OVERRIDE
+    if kind not in PROVIDERS:
+        return False
+    _OVERRIDE = kind
+    return True
+
+
+def probe(kind: str) -> bool:
+    """Быстро проверяет, доступен ли провайдер прямо сейчас.
+
+    Нужна, чтобы в интерфейсе показать «сейчас недоступна» вместо
+    ошибки: сессия Kaggle живёт не всегда, и пользователь должен
+    видеть это заранее, а не после нажатия.
+    """
+    try:
+        if kind == "gigachat":
+            return bool(os.getenv("LLM_API_KEY", "").strip())
+
+        if kind == "local":
+            import importlib.util
+            if importlib.util.find_spec("torch") is None:
+                return False
+            import torch
+            return bool(torch.cuda.is_available())
+
+        if kind == "http":
+            base = os.getenv("LLM_BASE_URL", "").strip()
+            if not base:
+                return False
+            import urllib.error
+            import urllib.request
+            try:
+                urllib.request.urlopen(base.rstrip("/"), timeout=4)
+                return True
+            except urllib.error.HTTPError:
+                # Сервер ответил хоть чем-то — значит живой
+                return True
+            except Exception:
+                return False
+    except Exception:
+        return False
+    return False
+
+
+def provider_status() -> list[dict]:
+    """Список моделей с признаком доступности — для кнопок в боте."""
+    active = current_kind()
+    return [{
+        "id": kind,
+        "name": title,
+        "available": probe(kind),
+        "active": kind == active,
+    } for kind, title in PROVIDERS.items()]
+
+
 def get_provider() -> LLMProvider | None:
-    """Выбирает модель по переменной LLM_PROVIDER.
+    """Выбирает модель по LLM_PROVIDER или по переключению в рантайме.
 
     gigachat — по умолчанию, облако, ключ в LLM_API_KEY
     local    — gemma-4-E4B в том же процессе, нужен GPU
@@ -167,7 +239,7 @@ def get_provider() -> LLMProvider | None:
     Смена провайдера не требует правок в коде: остальной слой работает
     через один и тот же метод complete().
     """
-    kind = os.getenv("LLM_PROVIDER", "gigachat").strip().lower()
+    kind = current_kind()
 
     if kind == "local":
         return LocalGemmaProvider(
