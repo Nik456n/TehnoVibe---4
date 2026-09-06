@@ -144,9 +144,13 @@ class HttpLLMProvider:
             if not url.endswith(("/completions", "/generate")):
                 url += "/v1/chat/completions"
 
-            req = urllib.request.Request(
-                url, data=payload,
-                headers={"Content-Type": "application/json"})
+            req = urllib.request.Request(url, data=payload, headers={
+                "Content-Type": "application/json",
+                # ngrok на бесплатном тарифе показывает страницу-заглушку
+                # вместо ответа сервера. Без этого заголовка вместо JSON
+                # приходит HTML и разбор падает.
+                "ngrok-skip-browser-warning": "1",
+            })
             with urllib.request.urlopen(req, timeout=self.timeout) as r:
                 data = json.loads(r.read().decode("utf-8"))
 
@@ -206,7 +210,10 @@ def probe(kind: str) -> bool:
             import urllib.error
             import urllib.request
             try:
-                urllib.request.urlopen(base.rstrip("/"), timeout=4)
+                req = urllib.request.Request(
+                    base.rstrip("/"),
+                    headers={"ngrok-skip-browser-warning": "1"})
+                urllib.request.urlopen(req, timeout=4)
                 return True
             except urllib.error.HTTPError:
                 # Сервер ответил хоть чем-то — значит живой
