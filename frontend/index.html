@@ -98,6 +98,8 @@
             </div>
         </div>
 
+        <div id="category-filters" class="flex gap-2 overflow-x-auto no-scrollbar mb-4"></div>
+
         <div class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3 px-1" id="subs-header">Активные
             подписки (0)</div>
         <div id="subscriptions-list" class="space-y-3 mb-6"></div>
@@ -172,6 +174,7 @@
         let canceledSubs = new Set();
         let currentCancelTarget = null;
         let currentOverlapTabId = null;
+        let activeCategory = 'all';
 
         const categoryDict = {
             'video': 'Видеосервисы',
@@ -495,11 +498,53 @@
             }
         }
 
+        // Фильтры по категориям. Категорию отдаёт детектор в каждой
+        // подписке, поэтому фильтрация — чисто клиентская: прячем
+        // карточки в уже загруженном списке, за данными не ходим.
+        function renderFilters() {
+            const box = document.getElementById('category-filters');
+            const subs = (globalData && globalData.subscriptions) || [];
+
+            const counts = {};
+            subs.forEach(s => {
+                const c = s.category || 'other';
+                counts[c] = (counts[c] || 0) + 1;
+            });
+
+            // Порядок: сначала категории, где подписок больше — там и
+            // пересечения, ради которых человек сюда пришёл.
+            const cats = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+            if (!counts[activeCategory] && activeCategory !== 'all') activeCategory = 'all';
+
+            const chips = [['all', 'Все', subs.length]]
+                .concat(cats.map(c => [c, categoryDict[c] || c, counts[c]]));
+
+            box.innerHTML = chips.map(([id, label, n]) => {
+                const on = id === activeCategory;
+                const cls = on
+                    ? 'bg-primary-custom text-white'
+                    : 'bg-card-custom text-gray-600 active:bg-gray-200';
+                return `<button onclick="setCategory('${id}')"
+                    class="${cls} flex-shrink-0 text-[13px] font-bold px-4 py-2 rounded-full transition-colors">
+                    ${label} ${n}</button>`;
+            }).join('');
+        }
+
+        function setCategory(id) {
+            triggerHaptic();
+            activeCategory = id;
+            renderFilters();
+            renderSubscriptions();
+        }
+
         function renderSubscriptions() {
             const subsContainer = document.getElementById('subscriptions-list');
             subsContainer.innerHTML = '';
 
-            const subs = globalData.subscriptions || [];
+            const all = globalData.subscriptions || [];
+            const subs = activeCategory === 'all'
+                ? all
+                : all.filter(s => (s.category || 'other') === activeCategory);
             document.getElementById('subs-header').innerText = `Активные подписки (${subs.length})`;
 
             subs.forEach(sub => {
@@ -537,6 +582,7 @@
             document.getElementById('monthly-total-value').innerHTML = `${formatMoney(data.summary.monthly_total)} ₽<span class="text-[16px] font-medium text-white/90">/мес</span>`;
             document.getElementById('yearly-savings').innerText = `Экономия ${formatMoney(data.summary.potential_savings_yearly)} ₽/год`;
 
+            renderFilters();
             renderSubscriptions();
             updateOverlapsVisibility();
         }
