@@ -93,7 +93,7 @@
                         0 ₽<span class="text-[16px] font-medium text-white/90">/мес</span>
                     </div>
                     <div class="bg-white/20 text-[11px] font-medium px-2 py-1 rounded-md" id="yearly-savings">
-                        Экономия 0 ₽/год
+                        Потенциал экономии 0 ₽/год
                     </div>
                 </div>
                 <div id="freed-money-container"
@@ -469,6 +469,7 @@
             }
             triggerHaptic();
             updateFreedMoney();
+            updateHeaderTotals();
             renderSubscriptions();
             updateOverlapsVisibility();
             goBackToMain();
@@ -490,6 +491,20 @@
             } else {
                 container.classList.add('hidden');
             }
+        }
+
+        // Расход считается от активных подписок, а не из summary — это снимок,
+        // сделанный при разборе, и после отмены он застывал: «освободили»
+        // росло, а «расход» стоял на месте. Годовые приводим к месяцу так же,
+        // как это делает бэкенд, иначе числа разойдутся.
+        function updateHeaderTotals() {
+            if (!globalData || !globalData.subscriptions) return;
+            const monthly = globalData.subscriptions
+                .filter(s => !canceledSubs.has(s.id))
+                .reduce((sum, s) =>
+                    sum + (s.period === 'yearly' ? s.amount / 12 : s.amount), 0);
+            document.getElementById('monthly-total-value').innerHTML =
+                `${formatMoney(monthly)} ₽<span class="text-[16px] font-medium text-white/90">/мес</span>`;
         }
 
         function updateOverlapsVisibility() {
@@ -551,7 +566,9 @@
             const subs = activeCategory === 'all'
                 ? all
                 : all.filter(s => (s.category || 'other') === activeCategory);
-            document.getElementById('subs-header').innerText = `Активные подписки (${subs.length})`;
+            // Отменённые остаются в списке зачёркнутыми, но активными не являются
+            const activeCount = subs.filter(s => !canceledSubs.has(s.id)).length;
+            document.getElementById('subs-header').innerText = `Активные подписки (${activeCount})`;
 
             subs.forEach(sub => {
                 const isCanceled = canceledSubs.has(sub.id);
@@ -585,8 +602,8 @@
 
         function renderApp(data) {
             globalData = data;
-            document.getElementById('monthly-total-value').innerHTML = `${formatMoney(data.summary.monthly_total)} ₽<span class="text-[16px] font-medium text-white/90">/мес</span>`;
-            document.getElementById('yearly-savings').innerText = `Экономия ${formatMoney(data.summary.potential_savings_yearly)} ₽/год`;
+            updateHeaderTotals();
+            document.getElementById('yearly-savings').innerText = `Потенциал экономии ${formatMoney(data.summary.potential_savings_yearly)} ₽/год`;
 
             renderFilters();
             renderSubscriptions();
