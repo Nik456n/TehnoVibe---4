@@ -63,6 +63,13 @@ _PERIODS = [
 def normalize_merchant(raw: str) -> str:
     """'YANDEX*KINOPOISK MOSCOW RUS 123456' -> 'YANDEX KINOPOISK'."""
     s = raw.upper()
+    # Дата в начале описания приходит из PDF-выписки, где она склеена с
+    # названием операции. Без среза каждое списание получает свой ключ
+    # ("28 03 TELEGRAM PREMIUM", "28 04 TELEGRAM PREMIUM"), группа
+    # рассыпается на группы по одной транзакции, и MIN_OCCURRENCES_UNKNOWN
+    # отсекает их все. Год уже убирался ниже как код терминала, а день и
+    # месяц двузначные и оставались.
+    s = re.sub(r"^\s*\d{1,2}[.\-/]\d{1,2}[.\-/]\d{2,4}\s+", " ", s)
     s = re.sub(r"[*/\\|,.\-_#№]+", " ", s)
     s = re.sub(r"\b\d{4,}\b", " ", s)          # коды терминалов
     tokens = [t for t in s.split() if t and t not in NOISE_TOKENS]
