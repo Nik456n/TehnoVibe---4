@@ -74,6 +74,11 @@
         .text-warning {
             color: var(--flag-yellow);
         }
+
+        #category-filters,
+        #overlap-tabs {
+            touch-action: pan-x;
+        }
     </style>
 </head>
 
@@ -166,6 +171,7 @@
     <script>
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.disableVerticalSwipes();
             window.Telegram.WebApp.expand();
         }
 
