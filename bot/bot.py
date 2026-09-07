@@ -1,9 +1,11 @@
 import asyncio
 import json
 import logging
+import os
 import pathlib
 import sys
 import tempfile
+import urllib.request
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import CommandStart, Command
@@ -179,12 +181,45 @@ MOCK: dict = json.loads(
 
 DEMO = AnalyzeResponse.model_validate(MOCK)
 
-# Последний результат анализа выписки. Для «Отписаться» показываем именно
-# найденные ботом подписки; если анализа ещё не было — демо-данные.
-LAST_RESULT: AnalyzeResponse = DEMO
+# Состояние по чатам. Ключ — chat_id, тот же, что уходит в Mini App как ?rid=.
+# Общее состояние на всех давало два бага: чужие данные в чате и молчаливую
+# пропажу карточек, когда отписки от прошлой выписки резали новую.
+
+# Последний разбор выписки. Для «Отписаться» показываем именно найденные
+# подписки; если анализа в этом чате ещё не было — демо-данные.
+RESULTS: dict[int, AnalyzeResponse] = {}
 
 # Сервисы, от которых пользователь нажал «Я отписался» — скрываем из списка.
-UNSUBSCRIBED: set[str] = set()
+UNSUBSCRIBED: dict[int, set[str]] = {}
+
+
+def get_result(chat_id: int) -> AnalyzeResponse:
+    """Последний разбор этого чата; до первой выписки — демо."""
+    return RESULTS.get(chat_id, DEMO)
+
+
+def get_unsubscribed(chat_id: int) -> set[str]:
+    """Отметки «я отписался» этого чата."""
+    return UNSUBSCRIBED.setdefault(chat_id, set())
+
+
+def set_result(chat_id: int, response: AnalyzeResponse) -> None:
+    """Сохраняет новый разбор и сбрасывает отметки об отписке.
+
+    Сброс здесь не для порядка: отметки относились к прошлой выписке, и без
+    него старые id вырезали карточки чужих сервисов из новой, а шапка
+    оставалась верной — поэтому ошибка молчала. Сброс привязан к сохранению,
+    чтобы его нельзя было забыть.
+    """
+    RESULTS[chat_id] = response
+    UNSUBSCRIBED.pop(chat_id, None)
+
+
+def _chat_id(event: Message | CallbackQuery) -> int:
+    """chat_id одинаково достаётся из сообщения и из нажатия кнопки."""
+    if isinstance(event, CallbackQuery):
+        return event.message.chat.id
+    return event.chat.id
 
 DATA_DIR = pathlib.Path(__file__).resolve().parent.parent / "data"
 CANCEL_KB: dict[str, dict] = {}
@@ -199,20 +234,64 @@ FLAG_LABEL = {Flag.GREEN: "Полезная", Flag.YELLOW: "Средняя", Fla
 
 SBER_LINK = "https://online.sberbank.ru"
 
-
-def _report_button():
-    """Кнопка «Открыть отчёт» (Mini App). Только если URL HTTPS."""
-    if MINI_APP_URL.startswith("https://"):
-        return [
-            InlineKeyboardButton(
-                text="\U0001f4c8 Открыть отчёт",
-                web_app=WebAppInfo(url=MINI_APP_URL),
-            )
-        ]
-    return []
+# Бэкенд и Mini App живут на одном хосте: фронт раздаётся с бэкенда. Поэтому
+# адрес берём из MINI_APP_URL, а не заводим вторую переменную в .env — один
+# адрес правится в одном месте и не может разъехаться сам с собой. Переменная
+# BACKEND_URL оставлена как запасной путь, если бэкенд когда-нибудь переедет.
+BACKEND_URL: str = (os.environ.get("BACKEND_URL") or MINI_APP_URL).rstrip("/")
 
 
-def build_main_kb() -> InlineKeyboardMarkup:
+def _report_button(rid: int | None = None):
+    """Кнопка «Открыть отчёт» (Mini App). Только если URL HTTPS.
+
+    С `rid` Mini App покажет разбор этого чата, без него — демо-выписку.
+    """
+    if not MINI_APP_URL.startswith("https://"):
+        return []
+    url = MINI_APP_URL
+    if rid is not None:
+        url = f"{MINI_APP_URL.rstrip('/')}/?rid={rid}"
+    return [
+        InlineKeyboardButton(
+            text="\U0001f4c8 Открыть отчёт",
+            web_app=WebAppInfo(url=url),
+        )
+    ]
+
+
+def _post_result(chat_id: int, response: AnalyzeResponse) -> None:
+    """Синхронная отправка разбора. Вызывается только из отдельного потока."""
+    data = json.dumps(
+        response.model_dump(mode="json"), ensure_ascii=False
+    ).encode("utf-8")
+    req = urllib.request.Request(
+        f"{BACKEND_URL}/results/{chat_id}",
+        data=data,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=5):
+        pass
+
+
+async def push_result(chat_id: int, response: AnalyzeResponse) -> bool:
+    """Кладёт разбор на бэкенд, чтобы Mini App открыл его по ?rid=.
+
+    Запрос блокирующий, поэтому уходит в отдельный поток: иначе бот на все
+    пять секунд таймаута перестал бы отвечать всем остальным.
+    Неудача не критична — кнопка тогда ведёт на демо, как и раньше.
+    """
+    if not BACKEND_URL.startswith("https://"):
+        return False
+    try:
+        await asyncio.to_thread(_post_result, chat_id, response)
+        return True
+    except Exception as exc:
+        log.warning(f"разбор не доехал до бэкенда: {exc}")
+        return False
+
+
+def build_main_kb(rid: int | None = None) -> InlineKeyboardMarkup:
     buttons = [
         [
             InlineKeyboardButton(
@@ -221,7 +300,7 @@ def build_main_kb() -> InlineKeyboardMarkup:
             )
         ]
     ]
-    report = _report_button()
+    report = _report_button(rid)
     if report:
         buttons.append(report)
     buttons.append(
@@ -236,9 +315,9 @@ def build_main_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-def build_report_kb() -> InlineKeyboardMarkup:
+def build_report_kb(rid: int | None = None) -> InlineKeyboardMarkup:
     buttons = []
-    report = _report_button()
+    report = _report_button(rid)
     if report:
         buttons.append(report)
     buttons.append(
@@ -286,7 +365,8 @@ def build_subscription_card(sub) -> str:
     )
 
 
-def format_analysis(data: AnalyzeResponse) -> str:
+def format_analysis(data: AnalyzeResponse,
+                    unsubscribed: set[str] | frozenset = frozenset()) -> str:
     summary = data.summary
     header = (
         f"\U0001f4ca <b>Анализ подписок</b>\n\n"
@@ -300,16 +380,17 @@ def format_analysis(data: AnalyzeResponse) -> str:
     )
     # Сортировка: красные → жёлтые → зелёные
     flag_order = {Flag.RED: 0, Flag.YELLOW: 1, Flag.GREEN: 2}
-    active = [s for s in data.subscriptions if s.id not in UNSUBSCRIBED]
+    active = [s for s in data.subscriptions if s.id not in unsubscribed]
     active.sort(key=lambda s: flag_order.get(s.flag, 3))
     cards = [build_subscription_card(sub) for sub in active]
     return "\n\n".join([header, *cards])
 
 
-def cancel_markup() -> InlineKeyboardMarkup:
+def cancel_markup(chat_id: int) -> InlineKeyboardMarkup:
     buttons = []
-    for sub in LAST_RESULT.subscriptions:
-        if sub.id in UNSUBSCRIBED:
+    unsubscribed = get_unsubscribed(chat_id)
+    for sub in get_result(chat_id).subscriptions:
+        if sub.id in unsubscribed:
             continue
         flag = FLAG_EMOJI[sub.flag]
         buttons.append(
@@ -348,7 +429,9 @@ async def cmd_start(message: Message):
         "3. Пришлите файл сюда\n\n"
         "Или попробуйте демо-анализ на готовых данных."
     )
-    await message.answer(text, reply_markup=build_main_kb(), parse_mode="HTML")
+    await message.answer(
+        text, reply_markup=build_main_kb(message.chat.id), parse_mode="HTML"
+    )
 
 
 @router.message(Command("help"))
@@ -384,7 +467,9 @@ async def cmd_text(message: Message):
         "3. Пришлите файл сюда\n\n"
         "Или попробуйте демо-анализ на готовых данных."
     )
-    await message.answer(text, reply_markup=build_main_kb(), parse_mode="HTML")
+    await message.answer(
+        text, reply_markup=build_main_kb(message.chat.id), parse_mode="HTML"
+    )
 
 
 @router.message(Command("analyze"))
@@ -392,6 +477,9 @@ async def cmd_text(message: Message):
 async def cmd_analyze(event: Message | CallbackQuery):
     text = (
         "\U0001f50d <b>Демо-анализ</b> — данные из mock-файла.\n\n"
+        # Демо по отпискам не фильтруем: id в моке и у детектора разные
+        # (sub_006 — СберПрайм в моке и Кинопоиск в разборе), поэтому фильтр
+        # прятал из демо не тот сервис. Демо должно быть одинаковым всегда.
         + format_analysis(DEMO)
         + "\n\n\u26a0\ufe0f Это демо. Отправьте реальную PDF-выписку, "
         "чтобы получить настоящий анализ."
@@ -403,7 +491,7 @@ async def cmd_analyze(event: Message | CallbackQuery):
 async def cmd_menu(callback: CallbackQuery):
     await callback.message.answer(
         "\U0001f50d <b>Сканер подписок</b> — главное меню",
-        reply_markup=build_main_kb(),
+        reply_markup=build_main_kb(_chat_id(callback)),
         parse_mode="HTML",
     )
     await callback.answer()
@@ -417,13 +505,16 @@ async def cmd_cancel(event: Message | CallbackQuery):
         "Выберите подписку, чтобы получить\n"
         "пошаговую инструкцию по отмене:"
     )
-    await _reply_kb(event, text, cancel_markup())
+    await _reply_kb(event, text, cancel_markup(_chat_id(event)))
 
 
 @router.callback_query(F.data.startswith("cancel_sub_"))
 async def cmd_cancel_detail(callback: CallbackQuery):
+    chat_id = _chat_id(callback)
     sub_id = callback.data.replace("cancel_", "")
-    sub = next((s for s in LAST_RESULT.subscriptions if s.id == sub_id), None)
+    sub = next(
+        (s for s in get_result(chat_id).subscriptions if s.id == sub_id), None
+    )
     if not sub:
         await callback.answer("\u274c Подписка не найдена", show_alert=True)
         return
@@ -482,24 +573,27 @@ async def cmd_cancel_detail(callback: CallbackQuery):
 
 @router.callback_query(F.data.startswith("unsub_"))
 async def cmd_unsubscribed(callback: CallbackQuery):
-    global UNSUBSCRIBED, LAST_RESULT
+    chat_id = _chat_id(callback)
+    result = get_result(chat_id)
     sub_id = callback.data.replace("unsub_", "")
-    sub = next((s for s in LAST_RESULT.subscriptions if s.id == sub_id), None)
+    sub = next((s for s in result.subscriptions if s.id == sub_id), None)
     if not sub:
         await callback.answer("\u274c Подписка не найдена", show_alert=True)
         return
 
-    UNSUBSCRIBED.add(sub_id)
+    get_unsubscribed(chat_id).add(sub_id)
     log.info(f"пользователь отписался: {sub.name}")
 
-    # Убираем подписку из результата и пересчитываем пересечения и флаги
-    remaining = [s for s in LAST_RESULT.subscriptions if s.id != sub_id]
-    LAST_RESULT = _recompute_response(
+    # Убираем подписку из результата и пересчитываем пересечения и флаги.
+    # Пишем в RESULTS напрямую, а не через set_result: отметки об отписке
+    # здесь нужно сохранить — сбрасывает их только новая выписка.
+    remaining = [s for s in result.subscriptions if s.id != sub_id]
+    RESULTS[chat_id] = _recompute_response(
         remaining,
-        request_id=LAST_RESULT.request_id,
-        transactions_parsed=LAST_RESULT.transactions_parsed,
-        period_from=LAST_RESULT.period_from,
-        period_to=LAST_RESULT.period_to,
+        request_id=result.request_id,
+        transactions_parsed=result.transactions_parsed,
+        period_from=result.period_from,
+        period_to=result.period_to,
     )
 
     await callback.message.answer(
@@ -513,7 +607,6 @@ async def cmd_unsubscribed(callback: CallbackQuery):
 
 @router.message(F.document)
 async def handle_document(message: Message, bot: Bot):
-    global LAST_RESULT
     doc: Document = message.document
     fname = (doc.file_name or "").lower()
 
@@ -556,7 +649,7 @@ async def handle_document(message: Message, bot: Bot):
         log.info(f"разобрано: {len(txs)} операций, llm_used={response.llm_used}")
 
         # Запоминаем результат — меню «Отписаться» покажет эти подписки
-        LAST_RESULT = response
+        set_result(message.chat.id, response)
     except asyncio.TimeoutError:
         await wait.delete()
         await message.answer(
@@ -588,7 +681,7 @@ async def handle_document(message: Message, bot: Bot):
     header = (
         f"\u2705 Выписка разобрана: {response.transactions_parsed} операций.\n\n"
     )
-    text = header + format_analysis(response)
+    text = header + format_analysis(response, get_unsubscribed(message.chat.id))
     if response.overlaps:
         text += "\n\n<b>Что предлагаем:</b>\n"
         for g in response.overlaps:
@@ -598,7 +691,12 @@ async def handle_document(message: Message, bot: Bot):
             )
             text += f"  • {g.category.value} — оставить {keep_name}, сэкономите {money(g.savings_yearly)}/год\n"
 
-    await message.answer(text[:4096], reply_markup=build_report_kb(), parse_mode="HTML")
+    # Кладём разбор на бэкенд и передаём ключ в кнопку. Не доехало — кнопка
+    # остаётся без ?rid=, Mini App показывает демо, ровно как раньше.
+    rid = message.chat.id if await push_result(message.chat.id, response) else None
+    await message.answer(
+        text[:4096], reply_markup=build_report_kb(rid), parse_mode="HTML"
+    )
 
 
 async def main():
