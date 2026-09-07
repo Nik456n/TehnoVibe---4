@@ -7,6 +7,8 @@ import sys
 import tempfile
 import urllib.request
 
+import aiohttp
+
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import CommandStart, Command
 from aiogram.types import (
@@ -32,7 +34,7 @@ logging.basicConfig(
 )
 log = logging.getLogger("bot")
 
-from bot.config import BOT_TOKEN, MINI_APP_URL
+from bot.config import BOT_TOKEN, MINI_APP_URL, BACKEND_URL
 from contracts.schemas import (
     AnalyzeResponse,
     Category,
@@ -310,6 +312,9 @@ def build_main_kb(rid: int | None = None) -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text="\u274c Отписаться", callback_data="cancel_list")]
     )
     buttons.append(
+        [InlineKeyboardButton(text="\u2699\ufe0f Модель", callback_data="providers")]
+    )
+    buttons.append(
         [InlineKeyboardButton(text="\u2139\ufe0f Помощь", callback_data="help")]
     )
     return InlineKeyboardMarkup(inline_keyboard=buttons)
@@ -493,6 +498,77 @@ async def cmd_menu(callback: CallbackQuery):
         "\U0001f50d <b>Сканер подписок</b> — главное меню",
         reply_markup=build_main_kb(_chat_id(callback)),
         parse_mode="HTML",
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data == "providers")
+async def cmd_providers(callback: CallbackQuery):
+    """Показывает список моделей с пометкой доступности."""
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"{BACKEND_URL}/providers") as resp:
+                data = await resp.json()
+    except Exception as exc:
+        await callback.message.answer(
+            f"\u26a0\ufe0f Не удалось получить список моделей: {exc}"
+        )
+        await callback.answer()
+        return
+
+    providers = data.get("providers", [])
+    buttons = []
+    for p in providers:
+        if p["available"]:
+            text = p["name"]
+        else:
+            text = f"{p['name']} — сейчас недоступна"
+        if p["active"]:
+            text += " (активна)"
+        buttons.append([
+            InlineKeyboardButton(text=text, callback_data=f"provider_{p['id']}")
+        ])
+    buttons.append(
+        [InlineKeyboardButton(text="\U0001f3e0 Меню", callback_data="menu")]
+    )
+    kb = InlineKeyboardMarkup(inline_keyboard=buttons)
+    await callback.message.answer(
+        "\u2699\ufe0f <b>Выбор модели</b>\n\n"
+        "Модель используется для объяснений и категоризации. "
+        "Если модель недоступна — анализ пойдёт на детекторе без неё.",
+        reply_markup=kb,
+        parse_mode="HTML",
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("provider_"))
+async def cmd_switch_provider(callback: CallbackQuery):
+    """Переключает модель, показывает сообщение из ответа."""
+    kind = callback.data.replace("provider_", "")
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(f"{BACKEND_URL}/providers/{kind}") as resp:
+                if resp.status != 200:
+                    detail = (await resp.text()) or "неизвестная модель"
+                    await callback.answer(
+                        f"\u274c Не удалось переключить: {detail}",
+                        show_alert=True,
+                    )
+                    return
+                data = await resp.json()
+    except Exception as exc:
+        await callback.answer(
+            f"\u26a0\ufe0f Ошибка при переключении: {exc}",
+            show_alert=True,
+        )
+        return
+
+    await callback.message.answer(
+        f"\u2699\ufe0f <b>Модель: {data['name']}</b>\n\n{data['message']}\n\n"
+        f"Доступность: {'\U0001f7e2 доступна' if data['available'] else '\U0001f534 недоступна'}",
+        parse_mode="HTML",
+        reply_markup=build_main_kb(_chat_id(callback)),
     )
     await callback.answer()
 
