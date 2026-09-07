@@ -322,10 +322,19 @@ class Cache:
 
     Нужен, чтобы на защите ничего не считалось вживую: кэш прогревается
     заранее, и демо работает с нулевой задержкой даже без сети.
+
+    Ключи хранятся с префиксом провайдера, поэтому ответы GigaChat и
+    локальной Gemma лежат в одном файле, но не смешиваются.
     """
 
-    def __init__(self, path: Path = CACHE_FILE) -> None:
+    def __init__(self, path: Path = CACHE_FILE,
+                 kind: str | None = None) -> None:
         self.path = path
+        # Без префикса кэш после переключения модели отдавал ответ прошлой:
+        # ключ строится из содержимого запроса, а оно при смене провайдера
+        # не меняется. Провайдера берём в момент создания — enrich создаёт
+        # Cache уже после выбора, так что здесь он актуальный.
+        self.kind = kind or current_kind()
         self.data: dict[str, Any] = {}
         if path.exists():
             try:
@@ -333,11 +342,14 @@ class Cache:
             except (json.JSONDecodeError, OSError):
                 self.data = {}
 
+    def _key(self, key: str) -> str:
+        return f"{self.kind}:{key}"
+
     def get(self, key: str) -> Any:
-        return self.data.get(key)
+        return self.data.get(self._key(key))
 
     def set(self, key: str, value: Any) -> None:
-        self.data[key] = value
+        self.data[self._key(key)] = value
 
     def save(self) -> None:
         try:
